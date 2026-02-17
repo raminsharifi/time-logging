@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package time_logging;
+
+message Break {
+    int64 start_ts = 1;
+    int64 end_ts = 2;       // 0 means still on break
+}
+
+message Breaks {
+    repeated Break breaks = 1;
+}
