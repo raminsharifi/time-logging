@@ -22,8 +22,16 @@ pub fn list(conn: &Connection) {
             .timestamp_opt(item.created_at, 0)
             .single()
             .unwrap();
+        let entry_secs = get_todo_total_secs(conn, item.id);
+        let active_secs = get_active_todo_secs(conn, item.id);
+        let total_secs = entry_secs + active_secs;
+        let time_str = if total_secs > 0 {
+            format!("  {}", format_duration(total_secs))
+        } else {
+            String::new()
+        };
         println!(
-            "  [{check}] #{:<4} {}  ({})",
+            "  [{check}] #{:<4} {}  ({}){time_str}",
             item.id,
             item.text,
             date.format("%Y-%m-%d"),

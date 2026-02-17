@@ -40,10 +40,36 @@ pub fn start(conn: &Connection) {
         println!("Paused \"{}\".", paused.name);
     }
 
-    let name: String = Input::new()
-        .with_prompt("Activity name")
-        .interact_text()
-        .unwrap();
+    // Offer to link a todo first — if linked, use the todo text as the name
+    let mut todo_id: Option<u32> = None;
+    let mut name = String::new();
+    let open_todos: Vec<_> = list_todos(conn).into_iter().filter(|t| !t.done).collect();
+    if !open_todos.is_empty() {
+        let mut items: Vec<String> = open_todos
+            .iter()
+            .map(|t| format!("#{} {}", t.id, t.text))
+            .collect();
+        items.push("None".into());
+
+        let selection = Select::new()
+            .with_prompt("Link to a todo?")
+            .items(&items)
+            .default(items.len() - 1)
+            .interact()
+            .unwrap();
+
+        if selection < open_todos.len() {
+            todo_id = Some(open_todos[selection].id);
+            name = open_todos[selection].text.clone();
+        }
+    }
+
+    if name.is_empty() {
+        name = Input::new()
+            .with_prompt("Activity name")
+            .interact_text()
+            .unwrap();
+    }
 
     let category: String = Input::new()
         .with_prompt("Category")
@@ -58,6 +84,7 @@ pub fn start(conn: &Connection) {
         started_at: now.timestamp(),
         state: "running".into(),
         breaks: vec![],
+        todo_id,
     };
     insert_active(conn, &timer);
 
@@ -89,6 +116,7 @@ pub fn stop(conn: &Connection) {
         ended_at: now_ts,
         active_secs,
         breaks,
+        todo_id: timer.todo_id,
     };
 
     insert_entry(conn, &entry);
@@ -101,6 +129,18 @@ pub fn stop(conn: &Connection) {
         format_duration(active_secs),
         format_duration(break_secs),
     );
+
+    if let Some(tid) = timer.todo_id {
+        let confirm = Confirm::new()
+            .with_prompt(format!("Mark todo #{tid} as done?"))
+            .default(false)
+            .interact()
+            .unwrap();
+        if confirm {
+            mark_todo_done(conn, tid);
+            println!("Marked todo #{tid} as done.");
+        }
+    }
 }
 
 pub fn pause(conn: &Connection) {
@@ -176,6 +216,7 @@ pub fn resume(conn: &Connection) {
         started_at: timer_to_resume.started_at,
         state: "running".into(),
         breaks: timer_to_resume.breaks.clone(),
+        todo_id: timer_to_resume.todo_id,
     };
     if let Some(last) = resumed.breaks.last_mut() {
         if last.end_ts == 0 {
@@ -233,6 +274,7 @@ pub fn switch(conn: &Connection) {
             started_at: r.started_at,
             state: "paused".into(),
             breaks: r.breaks.clone(),
+            todo_id: r.todo_id,
         };
         paused_timer.breaks.push(proto::Break {
             start_ts: now_ts,
@@ -250,6 +292,7 @@ pub fn switch(conn: &Connection) {
         started_at: selected.started_at,
         state: "running".into(),
         breaks: selected.breaks.clone(),
+        todo_id: selected.todo_id,
     };
     if let Some(last) = resumed.breaks.last_mut() {
         if last.end_ts == 0 {
@@ -297,6 +340,14 @@ pub fn status(conn: &Connection) {
         println!("  Started:  {}", started.format("%H:%M:%S"));
         println!("  Active:   {}", format_duration(active_secs));
         println!("  Breaks:   {}", format_duration(break_secs));
+        if let Some(tid) = timer.todo_id {
+            let todos = list_todos(conn);
+            if let Some(todo) = todos.iter().find(|t| t.id == tid) {
+                println!("  -> todo #{} \"{}\"", tid, todo.text);
+            } else {
+                println!("  -> todo #{tid}");
+            }
+        }
     }
 }
 
@@ -328,10 +379,10 @@ pub fn log(conn: &Connection, today: bool, week: bool) {
     }
 
     println!(
-        "{:<5} {:<20} {:<15} {:<10} {:<12} {}",
-        "ID", "Name", "Category", "Date", "Active", "Breaks"
+        "{:<5} {:<20} {:<15} {:<10} {:<12} {:<10} {}",
+        "ID", "Name", "Category", "Date", "Active", "Breaks", "Todo"
     );
-    println!("{}", "-".repeat(76));
+    println!("{}", "-".repeat(86));
 
     let mut total_active: i64 = 0;
     let mut total_breaks: i64 = 0;
@@ -346,18 +397,24 @@ pub fn log(conn: &Connection, today: bool, week: bool) {
             .single()
             .unwrap();
 
+        let todo_col = match e.todo_id {
+            Some(tid) => format!("#{tid}"),
+            None => String::new(),
+        };
+
         println!(
-            "{:<5} {:<20} {:<15} {:<10} {:<12} {}",
+            "{:<5} {:<20} {:<15} {:<10} {:<12} {:<10} {}",
             e.id,
             truncate(&e.name, 19),
             truncate(&e.category, 14),
             date.format("%Y-%m-%d"),
             format_duration(e.active_secs),
             format_duration(break_secs),
+            todo_col,
         );
     }
 
-    println!("{}", "-".repeat(76));
+    println!("{}", "-".repeat(86));
     println!(
         "{:<5} {:<20} {:<15} {:<10} {:<12} {}",
         "",

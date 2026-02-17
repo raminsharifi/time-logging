@@ -81,6 +81,19 @@ pub fn open_db() -> Connection {
         );",
     )
     .expect("failed to create tables");
+
+    // Migrate: add todo_id column to active_timers and time_entries
+    let has_todo_id: bool = conn
+        .prepare("SELECT todo_id FROM active_timers LIMIT 0")
+        .is_ok();
+    if !has_todo_id {
+        conn.execute_batch(
+            "ALTER TABLE active_timers ADD COLUMN todo_id INTEGER;
+             ALTER TABLE time_entries ADD COLUMN todo_id INTEGER;",
+        )
+        .expect("failed to add todo_id columns");
+    }
+
     conn
 }
 
@@ -133,6 +146,7 @@ pub struct ActiveTimer {
     pub started_at: i64,
     pub state: String,
     pub breaks: Vec<proto::Break>,
+    pub todo_id: Option<u32>,
 }
 
 fn row_to_timer(row: &rusqlite::Row) -> rusqlite::Result<ActiveTimer> {
@@ -144,12 +158,13 @@ fn row_to_timer(row: &rusqlite::Row) -> rusqlite::Result<ActiveTimer> {
         started_at: row.get(3)?,
         state: row.get(4)?,
         breaks: decode_breaks(&breaks_blob),
+        todo_id: row.get(6)?,
     })
 }
 
 pub fn get_running(conn: &Connection) -> Option<ActiveTimer> {
     conn.query_row(
-        "SELECT id, name, category, started_at, state, breaks FROM active_timers WHERE state = 'running'",
+        "SELECT id, name, category, started_at, state, breaks, todo_id FROM active_timers WHERE state = 'running'",
         [],
         row_to_timer,
     )
@@ -158,7 +173,7 @@ pub fn get_running(conn: &Connection) -> Option<ActiveTimer> {
 
 pub fn get_all_active(conn: &Connection) -> Vec<ActiveTimer> {
     let mut stmt = conn
-        .prepare("SELECT id, name, category, started_at, state, breaks FROM active_timers ORDER BY id")
+        .prepare("SELECT id, name, category, started_at, state, breaks, todo_id FROM active_timers ORDER BY id")
         .unwrap();
     let rows = stmt.query_map([], row_to_timer).unwrap();
     rows.filter_map(|r| r.ok()).collect()
@@ -166,7 +181,7 @@ pub fn get_all_active(conn: &Connection) -> Vec<ActiveTimer> {
 
 pub fn get_active_by_id(conn: &Connection, id: u32) -> Option<ActiveTimer> {
     conn.query_row(
-        "SELECT id, name, category, started_at, state, breaks FROM active_timers WHERE id = ?1",
+        "SELECT id, name, category, started_at, state, breaks, todo_id FROM active_timers WHERE id = ?1",
         params![id],
         row_to_timer,
     )
@@ -175,14 +190,15 @@ pub fn get_active_by_id(conn: &Connection, id: u32) -> Option<ActiveTimer> {
 
 pub fn insert_active(conn: &Connection, timer: &ActiveTimer) -> u32 {
     conn.execute(
-        "INSERT INTO active_timers (name, category, started_at, state, breaks)
-         VALUES (?1, ?2, ?3, ?4, ?5)",
+        "INSERT INTO active_timers (name, category, started_at, state, breaks, todo_id)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
         params![
             timer.name,
             timer.category,
             timer.started_at,
             timer.state,
             encode_breaks(&timer.breaks),
+            timer.todo_id,
         ],
     )
     .expect("failed to insert active timer");
@@ -192,13 +208,14 @@ pub fn insert_active(conn: &Connection, timer: &ActiveTimer) -> u32 {
 pub fn update_active(conn: &Connection, timer: &ActiveTimer) {
     let id = timer.id.expect("cannot update timer without id");
     conn.execute(
-        "UPDATE active_timers SET name = ?1, category = ?2, started_at = ?3, state = ?4, breaks = ?5 WHERE id = ?6",
+        "UPDATE active_timers SET name = ?1, category = ?2, started_at = ?3, state = ?4, breaks = ?5, todo_id = ?6 WHERE id = ?7",
         params![
             timer.name,
             timer.category,
             timer.started_at,
             timer.state,
             encode_breaks(&timer.breaks),
+            timer.todo_id,
             id,
         ],
     )
@@ -220,12 +237,13 @@ pub struct TimeEntry {
     pub ended_at: i64,
     pub active_secs: i64,
     pub breaks: Vec<proto::Break>,
+    pub todo_id: Option<u32>,
 }
 
 pub fn insert_entry(conn: &Connection, entry: &TimeEntry) {
     conn.execute(
-        "INSERT INTO time_entries (name, category, started_at, ended_at, active_secs, breaks)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+        "INSERT INTO time_entries (name, category, started_at, ended_at, active_secs, breaks, todo_id)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
         params![
             entry.name,
             entry.category,
@@ -233,6 +251,7 @@ pub fn insert_entry(conn: &Connection, entry: &TimeEntry) {
             entry.ended_at,
             entry.active_secs,
             encode_breaks(&entry.breaks),
+            entry.todo_id,
         ],
     )
     .expect("failed to insert time entry");
@@ -248,11 +267,11 @@ pub fn delete_entry(conn: &Connection, id: u32) -> bool {
 pub fn query_entries(conn: &Connection, since_ts: Option<i64>) -> Vec<TimeEntry> {
     let (sql, bind_ts) = match since_ts {
         Some(ts) => (
-            "SELECT id, name, category, started_at, ended_at, active_secs, breaks FROM time_entries WHERE started_at >= ?1 ORDER BY started_at",
+            "SELECT id, name, category, started_at, ended_at, active_secs, breaks, todo_id FROM time_entries WHERE started_at >= ?1 ORDER BY started_at",
             Some(ts),
         ),
         None => (
-            "SELECT id, name, category, started_at, ended_at, active_secs, breaks FROM time_entries ORDER BY started_at",
+            "SELECT id, name, category, started_at, ended_at, active_secs, breaks, todo_id FROM time_entries ORDER BY started_at",
             None,
         ),
     };
@@ -268,6 +287,7 @@ pub fn query_entries(conn: &Connection, since_ts: Option<i64>) -> Vec<TimeEntry>
             ended_at: row.get(4)?,
             active_secs: row.get(5)?,
             breaks: decode_breaks(&breaks_blob),
+            todo_id: row.get(7)?,
         })
     };
 
@@ -327,4 +347,27 @@ pub fn remove_todo(conn: &Connection, id: u32) -> bool {
         .execute("DELETE FROM todos WHERE id = ?1", params![id])
         .unwrap_or(0);
     changed > 0
+}
+
+pub fn get_todo_total_secs(conn: &Connection, todo_id: u32) -> i64 {
+    conn.query_row(
+        "SELECT COALESCE(SUM(active_secs), 0) FROM time_entries WHERE todo_id = ?1",
+        params![todo_id],
+        |row| row.get(0),
+    )
+    .unwrap_or(0)
+}
+
+pub fn get_active_todo_secs(conn: &Connection, todo_id: u32) -> i64 {
+    let now_ts = chrono::Local::now().timestamp();
+    let timers = get_all_active(conn);
+    timers
+        .iter()
+        .filter(|t| t.todo_id == Some(todo_id))
+        .map(|t| {
+            let elapsed = now_ts - t.started_at;
+            let break_secs = total_break_secs(&t.breaks, now_ts);
+            (elapsed - break_secs).max(0)
+        })
+        .sum()
 }
