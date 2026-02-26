@@ -257,6 +257,40 @@ pub fn insert_entry(conn: &Connection, entry: &TimeEntry) {
     .expect("failed to insert time entry");
 }
 
+pub fn get_entry_by_id(conn: &Connection, id: u32) -> Option<TimeEntry> {
+    conn.query_row(
+        "SELECT id, name, category, started_at, ended_at, active_secs, breaks, todo_id FROM time_entries WHERE id = ?1",
+        params![id],
+        |row| {
+            let breaks_blob: Vec<u8> = row.get(6)?;
+            Ok(TimeEntry {
+                id: row.get(0)?,
+                name: row.get(1)?,
+                category: row.get(2)?,
+                started_at: row.get(3)?,
+                ended_at: row.get(4)?,
+                active_secs: row.get(5)?,
+                breaks: decode_breaks(&breaks_blob),
+                todo_id: row.get(7)?,
+            })
+        },
+    )
+    .ok()
+}
+
+pub fn update_entry(conn: &Connection, entry: &TimeEntry) {
+    conn.execute(
+        "UPDATE time_entries SET name = ?1, category = ?2, active_secs = ?3 WHERE id = ?4",
+        params![
+            entry.name,
+            entry.category,
+            entry.active_secs,
+            entry.id,
+        ],
+    )
+    .expect("failed to update time entry");
+}
+
 pub fn delete_entry(conn: &Connection, id: u32) -> bool {
     let changed = conn
         .execute("DELETE FROM time_entries WHERE id = ?1", params![id])
@@ -300,6 +334,27 @@ pub fn query_entries(conn: &Connection, since_ts: Option<i64>) -> Vec<TimeEntry>
     rows.filter_map(|r| r.ok()).collect()
 }
 
+pub fn get_last_entry(conn: &Connection) -> Option<TimeEntry> {
+    conn.query_row(
+        "SELECT id, name, category, started_at, ended_at, active_secs, breaks, todo_id FROM time_entries ORDER BY ended_at DESC LIMIT 1",
+        [],
+        |row| {
+            let breaks_blob: Vec<u8> = row.get(6)?;
+            Ok(TimeEntry {
+                id: row.get(0)?,
+                name: row.get(1)?,
+                category: row.get(2)?,
+                started_at: row.get(3)?,
+                ended_at: row.get(4)?,
+                active_secs: row.get(5)?,
+                breaks: decode_breaks(&breaks_blob),
+                todo_id: row.get(7)?,
+            })
+        },
+    )
+    .ok()
+}
+
 // --- Todo DB ops ---
 
 pub struct TodoItem {
@@ -338,6 +393,20 @@ pub fn list_todos(conn: &Connection) -> Vec<TodoItem> {
 pub fn mark_todo_done(conn: &Connection, id: u32) -> bool {
     let changed = conn
         .execute("UPDATE todos SET done = 1 WHERE id = ?1", params![id])
+        .unwrap_or(0);
+    changed > 0
+}
+
+pub fn unmark_todo_done(conn: &Connection, id: u32) -> bool {
+    let changed = conn
+        .execute("UPDATE todos SET done = 0 WHERE id = ?1", params![id])
+        .unwrap_or(0);
+    changed > 0
+}
+
+pub fn edit_todo(conn: &Connection, id: u32, text: &str) -> bool {
+    let changed = conn
+        .execute("UPDATE todos SET text = ?1 WHERE id = ?2", params![text, id])
         .unwrap_or(0);
     changed > 0
 }

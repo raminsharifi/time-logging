@@ -52,6 +52,24 @@ pub fn done(conn: &Connection, id: u32) {
     }
 }
 
+pub fn undo(conn: &Connection, id: u32) {
+    if unmark_todo_done(conn, id) {
+        println!("Marked todo #{id} as not done.");
+    } else {
+        eprintln!("Todo #{id} not found.");
+        std::process::exit(1);
+    }
+}
+
+pub fn edit(conn: &Connection, id: u32, text: &str) {
+    if edit_todo(conn, id, text) {
+        println!("Edited todo #{id}: {text}");
+    } else {
+        eprintln!("Todo #{id} not found.");
+        std::process::exit(1);
+    }
+}
+
 pub fn rm(conn: &Connection, id: u32) {
     if remove_todo(conn, id) {
         println!("Removed todo #{id}.");

@@ -69,6 +69,24 @@ EXAMPLES:
                  If multiple, lets you pick which one")]
     Resume,
 
+    /// Start a new timer using the details of the most recently stopped timer
+    #[command(after_help = "\
+EXAMPLES:
+  tl restart     Automatically starts a timer with the name, category, and todo
+                 link of your last completed activity")]
+    Restart,
+
+    /// Start a blocking Pomodoro timer
+    #[command(after_help = "\
+EXAMPLES:
+  tl pomodoro 25     Start a 25-minute timer that blocks the terminal,
+                     shows remaining time, auto-stops, and sends a notification.")]
+    Pomodoro {
+        /// Duration in minutes (default 25)
+        #[arg(default_value_t = 25)]
+        minutes: u32,
+    },
+
     /// Show all active timers (running and paused)
     #[command(after_help = "\
 EXAMPLES:
@@ -116,6 +134,32 @@ EXAMPLES:
 
 #[derive(Subcommand)]
 enum LogAction {
+    /// Edit a log entry
+    Edit {
+        /// Log entry ID
+        id: u32,
+        /// New name
+        #[arg(long)]
+        name: Option<String>,
+        /// New category
+        #[arg(long)]
+        category: Option<String>,
+        /// Add time in minutes
+        #[arg(long)]
+        add: Option<u32>,
+        /// Subtract time in minutes
+        #[arg(long)]
+        sub: Option<u32>,
+    },
+    /// Export log entries to CSV
+    Export {
+        /// Show only today's entries
+        #[arg(long)]
+        today: bool,
+        /// Show entries from the last 7 days
+        #[arg(long)]
+        week: bool,
+    },
     /// Remove a log entry
     Rm {
         /// Log entry ID
@@ -137,6 +181,17 @@ enum TodoAction {
         /// Todo ID
         id: u32,
     },
+    Edit {
+        /// Todo ID
+        id: u32,
+        /// New text
+        text: Vec<String>,
+    },
+    /// Un-mark a completed todo item
+    Undo {
+        /// Todo ID
+        id: u32,
+    },
     /// Remove a todo item
     Rm {
         /// Todo ID
@@ -153,16 +208,22 @@ fn main() {
         Commands::Stop => timer::stop(&conn),
         Commands::Pause => timer::pause(&conn),
         Commands::Resume => timer::resume(&conn),
+        Commands::Restart => timer::restart(&conn),
+        Commands::Pomodoro { minutes } => timer::pomodoro(&conn, minutes),
         Commands::Status => timer::status(&conn),
         Commands::Switch => timer::switch(&conn),
         Commands::Log { action, today, week } => match action {
             None => timer::log(&conn, today, week),
+            Some(LogAction::Edit { id, name, category, add, sub }) => timer::edit_log(&conn, id, name, category, add, sub),
+            Some(LogAction::Export { today, week }) => timer::export_log(&conn, today, week),
             Some(LogAction::Rm { id }) => timer::rm(&conn, id),
         },
         Commands::Todo { action } => match action {
             TodoAction::Add { text } => todo::add(&conn, &text.join(" ")),
             TodoAction::List => todo::list(&conn),
+            TodoAction::Edit { id, text } => todo::edit(&conn, id, &text.join(" ")),
             TodoAction::Done { id } => todo::done(&conn, id),
+            TodoAction::Undo { id } => todo::undo(&conn, id),
             TodoAction::Rm { id } => todo::rm(&conn, id),
         },
     }

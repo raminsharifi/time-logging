@@ -61,6 +61,17 @@ tl stop               → Stop "review", saves to log
 tl log --today        → See what you did today
 ```
 
+## Planned Features / Roadmap
+
+Based on current functionality, here are several features planned for future releases:
+
+- **Edit past logs & todos**: Modify logged time entries (add/subtract time, fix typos) and edit descriptions of existing todos.
+- **Reporting & Exporting**: Export logged time to CSV/JSON, and generate weekly/monthly aggregated reports in the terminal.
+- **Pomodoro Mode**: Built-in Pomodoro timers (e.g., `tl pomodoro 25`) with system notifications for breaks.
+- **Restart Previous Timer**: Quickly restart a new timer using the details of the most recently stopped timer.
+- **Idle Detection**: Optionally detect OS idle time and ask to subtract it from active timers.
+- **Undo Actions**: Un-complete a todo or restore a deleted log entry.
+
 ## Data Storage
 
 Data is stored in a SQLite database at:
