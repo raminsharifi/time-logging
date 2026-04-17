@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		141A5486DE62F7348BB3644A /* DaemonManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 783FFE380C8174108AE19AD9 /* DaemonManager.swift */; };
 		157BD0134BAB6CA74722DAC6 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5EEDBF276781092BE9D778E /* Models.swift */; };
 		1C2F0407C58F7502FBFDEF63 /* EntriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D2CA0D9ECA2BD50C75EECE /* EntriesView.swift */; };
 		24F11741C7FBD0220864A25F /* NewTimerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C466ED8D6996AD76D87ECB /* NewTimerSheet.swift */; };
@@ -37,6 +38,7 @@
 		558517EBCBBC64D67686B562 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		57D2CA0D9ECA2BD50C75EECE /* EntriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntriesView.swift; sourceTree = "<group>"; };
 		6074FF59633903EE2BBA9307 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		783FFE380C8174108AE19AD9 /* DaemonManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaemonManager.swift; sourceTree = "<group>"; };
 		A2484EC889DFCE6D282860EA /* GlassComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassComponents.swift; sourceTree = "<group>"; };
 		B5C7E8846B75D7D58969F9F1 /* TimeLogger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimeLogger.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5EEDBF276781092BE9D778E /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 			isa = PBXGroup;
 			children = (
 				558517EBCBBC64D67686B562 /* APIClient.swift */,
+				783FFE380C8174108AE19AD9 /* DaemonManager.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -135,7 +138,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 37CABEBB3C174D53A3BBB10D /* Build configuration list for PBXNativeTarget "TimeLoggerMac" */;
 			buildPhases = (
+				8ACFDDD88E3FFC7AF69F5B05 /* Build tl daemon (cargo build --features serve,ble) */,
 				E18F6F16C8376E4C1AFB1DDE /* Sources */,
+				7F5FC8EA17D92CA454E938F5 /* Embed tl binary and LaunchAgent plist */,
 			);
 			buildRules = (
 			);
@@ -181,6 +186,47 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		7F5FC8EA17D92CA454E938F5 /* Embed tl binary and LaunchAgent plist */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Embed tl binary and LaunchAgent plist";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -euo pipefail\nif [[ \"${CONFIGURATION}\" == \"Release\" ]]; then\n  TL_BIN=\"$SRCROOT/../target/release/tl\"\nelse\n  TL_BIN=\"$SRCROOT/../target/debug/tl\"\nfi\nAPP_BUNDLE=\"$BUILT_PRODUCTS_DIR/$WRAPPER_NAME\"\nmkdir -p \"$APP_BUNDLE/Contents/MacOS\"\ncp \"$TL_BIN\" \"$APP_BUNDLE/Contents/MacOS/tl\"\nchmod +x \"$APP_BUNDLE/Contents/MacOS/tl\"\nmkdir -p \"$APP_BUNDLE/Contents/Library/LaunchAgents\"\ncp \"$SRCROOT/TimeLogger/LaunchAgents/com.raminsharifi.timelogger.daemon.plist\" \\\n   \"$APP_BUNDLE/Contents/Library/LaunchAgents/com.raminsharifi.timelogger.daemon.plist\"\nif [[ -n \"${EXPANDED_CODE_SIGN_IDENTITY:-}\" && \"${EXPANDED_CODE_SIGN_IDENTITY}\" != \"-\" ]]; then\n  codesign --force --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \\\n    --options runtime --timestamp=none \\\n    \"$APP_BUNDLE/Contents/MacOS/tl\"\nfi\n";
+		};
+		8ACFDDD88E3FFC7AF69F5B05 /* Build tl daemon (cargo build --features serve,ble) */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Build tl daemon (cargo build --features serve,ble)";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -euo pipefail\nexport PATH=\"$HOME/.cargo/bin:/opt/homebrew/bin:/usr/local/bin:$PATH\"\ncd \"$SRCROOT/..\"\nif [[ \"${CONFIGURATION}\" == \"Release\" ]]; then\n  cargo build --release --features \"serve ble\" --bin tl\nelse\n  cargo build --features \"serve ble\" --bin tl\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		E18F6F16C8376E4C1AFB1DDE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -189,6 +235,7 @@
 				9566C2F1C86C207FCE000DCD /* APIClient.swift in Sources */,
 				D237B8B735F9861509D0FDF9 /* AnalyticsView.swift in Sources */,
 				7897BA847DFB10DD4F0A88E5 /* ContentView.swift in Sources */,
+				141A5486DE62F7348BB3644A /* DaemonManager.swift in Sources */,
 				31EAD7AA93C786670E0E350F /* DesignSystem.swift in Sources */,
 				A9E13817E85C9334F101EEA6 /* DevicesView.swift in Sources */,
 				1C2F0407C58F7502FBFDEF63 /* EntriesView.swift in Sources */,

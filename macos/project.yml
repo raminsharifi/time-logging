@@ -20,6 +20,7 @@ targets:
       - path: TimeLogger
         excludes:
           - Info.plist
+          - LaunchAgents
     info:
       path: TimeLogger/Info.plist
       properties:
@@ -31,3 +32,37 @@ targets:
       PRODUCT_NAME: TimeLogger
       CODE_SIGN_STYLE: Automatic
       DEVELOPMENT_TEAM: ""
+    preBuildScripts:
+      - name: Build tl daemon (cargo build --features serve,ble)
+        basedOnDependencyAnalysis: false
+        script: |
+          set -euo pipefail
+          export PATH="$HOME/.cargo/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
+          cd "$SRCROOT/.."
+          if [[ "${CONFIGURATION}" == "Release" ]]; then
+            cargo build --release --features "serve ble" --bin tl
+          else
+            cargo build --features "serve ble" --bin tl
+          fi
+    postBuildScripts:
+      - name: Embed tl binary and LaunchAgent plist
+        basedOnDependencyAnalysis: false
+        script: |
+          set -euo pipefail
+          if [[ "${CONFIGURATION}" == "Release" ]]; then
+            TL_BIN="$SRCROOT/../target/release/tl"
+          else
+            TL_BIN="$SRCROOT/../target/debug/tl"
+          fi
+          APP_BUNDLE="$BUILT_PRODUCTS_DIR/$WRAPPER_NAME"
+          mkdir -p "$APP_BUNDLE/Contents/MacOS"
+          cp "$TL_BIN" "$APP_BUNDLE/Contents/MacOS/tl"
+          chmod +x "$APP_BUNDLE/Contents/MacOS/tl"
+          mkdir -p "$APP_BUNDLE/Contents/Library/LaunchAgents"
+          cp "$SRCROOT/TimeLogger/LaunchAgents/com.raminsharifi.timelogger.daemon.plist" \
+             "$APP_BUNDLE/Contents/Library/LaunchAgents/com.raminsharifi.timelogger.daemon.plist"
+          if [[ -n "${EXPANDED_CODE_SIGN_IDENTITY:-}" && "${EXPANDED_CODE_SIGN_IDENTITY}" != "-" ]]; then
+            codesign --force --sign "$EXPANDED_CODE_SIGN_IDENTITY" \
+              --options runtime --timestamp=none \
+              "$APP_BUNDLE/Contents/MacOS/tl"
+          fi

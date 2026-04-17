@@ -56,27 +56,28 @@ struct PomodoroView: View {
             let rem = remaining(at: now)
             let prog = progress(at: now)
 
-            VStack(spacing: TL.Space.l) {
-                modeSelector
-                    .padding(.top, TL.Space.m)
+            ScrollView {
+                VStack(spacing: TL.Space.l) {
+                    modeSelector
+                        .padding(.top, TL.Space.m)
 
-                Spacer(minLength: 0)
+                    ringHero(remaining: rem, progress: prog)
+                        .padding(.vertical, TL.Space.m)
 
-                ringHero(remaining: rem, progress: prog)
+                    roundDots
 
-                roundDots
-
-                Spacer(minLength: 0)
-
-                if !isRunning {
-                    presetRow
-                    startButton
-                } else {
-                    cancelButton
+                    if !isRunning {
+                        presetRow
+                        startButton
+                    } else {
+                        cancelButton
+                    }
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, TL.Space.l)
+                .padding(.bottom, TL.Space.l)
             }
-            .padding(.horizontal, TL.Space.l)
-            .padding(.bottom, TL.Space.l)
+            .scrollContentBackground(.hidden)
             .onChange(of: rem) { _, newValue in
                 if isRunning && newValue == 0 { finishPomodoro() }
             }
@@ -123,6 +124,7 @@ struct PomodoroView: View {
         ZStack {
             Circle()
                 .stroke(mode.tint.opacity(0.15), lineWidth: 14)
+                .padding(7)
             Circle()
                 .trim(from: 0, to: progress)
                 .stroke(
@@ -133,6 +135,7 @@ struct PomodoroView: View {
                     style: StrokeStyle(lineWidth: 14, lineCap: .round)
                 )
                 .rotationEffect(.degrees(-90))
+                .padding(7)
                 .shadow(color: mode.tint.opacity(0.4), radius: 16)
 
             VStack(spacing: 6) {
@@ -149,7 +152,6 @@ struct PomodoroView: View {
             }
         }
         .frame(width: 280, height: 280)
-        .drawingGroup()
     }
 
     @ViewBuilder

@@ -3,14 +3,17 @@ import SwiftUI
 @main
 struct TimeLoggerApp: App {
     @StateObject private var api = APIClient()
+    @StateObject private var daemon = DaemonManager.shared
     @State private var hotkeysInstalled = false
 
     var body: some Scene {
         WindowGroup("TimeLogger", id: "main") {
             ContentView()
                 .environmentObject(api)
+                .environmentObject(daemon)
                 .frame(minWidth: 720, minHeight: 480)
                 .onAppear {
+                    daemon.registerIfNeeded()
                     api.startPolling()
                     if !hotkeysInstalled {
                         installHotkeys()
@@ -25,6 +28,7 @@ struct TimeLoggerApp: App {
         MenuBarExtra {
             MenuBarContent()
                 .environmentObject(api)
+                .environmentObject(daemon)
         } label: {
             MenuBarLabel()
         }

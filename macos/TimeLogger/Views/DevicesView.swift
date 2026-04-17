@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DevicesView: View {
     @EnvironmentObject var api: APIClient
+    @EnvironmentObject var daemon: DaemonManager
     @State private var devices: DevicesResponse?
 
     private let refreshTimer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
@@ -9,6 +10,8 @@ struct DevicesView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: TL.Space.m) {
+                daemonSection
+
                 section(title: "BLE CONNECTED", tint: TL.Palette.sky) {
                     if let ble = devices?.ble_connected, !ble.isEmpty {
                         VStack(spacing: TL.Space.s) {
@@ -32,7 +35,7 @@ struct DevicesView: View {
                 HStack(alignment: .top, spacing: 6) {
                     Image(systemName: "info.circle")
                         .foregroundStyle(.secondary)
-                    Text("Run `tl serve --ble` to enable BLE. Sync clients appear after the first sync from Watch or iPhone.")
+                    Text("The bundled daemon runs `tl serve --ble` in the background. Sync clients appear after the first sync from Watch or iPhone.")
                         .font(TL.TypeScale.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -42,7 +45,79 @@ struct DevicesView: View {
         }
         .scrollContentBackground(.hidden)
         .task { await loadDevices() }
-        .onReceive(refreshTimer) { _ in Task { await loadDevices() } }
+        .onReceive(refreshTimer) { _ in
+            Task { await loadDevices() }
+            daemon.refreshStatus()
+        }
+    }
+
+    @ViewBuilder
+    private var daemonSection: some View {
+        let tint = daemonTint
+        section(title: "BACKGROUND DAEMON", tint: tint) {
+            HStack(spacing: TL.Space.s) {
+                Image(systemName: daemonIcon)
+                    .font(.title2)
+                    .foregroundStyle(tint)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("tl serve --ble")
+                        .font(TL.TypeScale.headline.monospaced())
+                    Text(daemon.statusText)
+                        .font(TL.TypeScale.caption2)
+                        .foregroundStyle(.secondary)
+                    if let err = daemon.lastError {
+                        Text(err)
+                            .font(TL.TypeScale.caption2)
+                            .foregroundStyle(TL.Palette.ember)
+                            .lineLimit(2)
+                    }
+                }
+                Spacer()
+                daemonActionButton
+            }
+            .padding(10)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: TL.Radius.m, style: .continuous))
+        }
+    }
+
+    @ViewBuilder
+    private var daemonActionButton: some View {
+        switch daemon.status {
+        case .enabled:
+            Button("Disable") {
+                Task { await daemon.unregister() }
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+        case .requiresApproval:
+            Button("Open Settings") { daemon.openLoginItems() }
+                .buttonStyle(.borderedProminent)
+                .tint(TL.Palette.citrine)
+                .controlSize(.small)
+        default:
+            Button("Enable") { daemon.registerIfNeeded() }
+                .buttonStyle(.borderedProminent)
+                .tint(TL.Palette.emerald)
+                .controlSize(.small)
+        }
+    }
+
+    private var daemonTint: Color {
+        switch daemon.status {
+        case .enabled: TL.Palette.emerald
+        case .requiresApproval: TL.Palette.citrine
+        case .notFound: TL.Palette.ember
+        default: TL.Palette.mist
+        }
+    }
+
+    private var daemonIcon: String {
+        switch daemon.status {
+        case .enabled: "bolt.circle.fill"
+        case .requiresApproval: "exclamationmark.triangle.fill"
+        case .notFound: "xmark.octagon.fill"
+        default: "power.circle"
+        }
     }
 
     @ViewBuilder

@@ -44,8 +44,8 @@ struct ContentView: View {
                 .padding(.top, TL.Space.s)
             } else {
                 IdleMiniCard()
-                    .padding(.horizontal, TL.Space.s)
-                    .padding(.top, TL.Space.s)
+                    .padding(.horizontal, TL.Space.m)
+                    .padding(.top, TL.Space.m)
             }
 
             List(SidebarItem.allCases, selection: $selection) { item in
