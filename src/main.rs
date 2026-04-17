@@ -2,6 +2,24 @@ mod state;
 mod timer;
 mod todo;
 
+#[cfg(feature = "tui")]
+mod tui;
+
+#[cfg(feature = "serve")]
+mod api;
+#[cfg(feature = "serve")]
+mod mdns;
+#[cfg(feature = "serve")]
+mod models;
+#[cfg(feature = "serve")]
+mod server;
+#[cfg(feature = "serve")]
+mod sync;
+#[cfg(feature = "ble")]
+mod ble;
+#[cfg(feature = "icloud")]
+mod icloud;
+
 use clap::{Parser, Subcommand};
 use state::open_db;
 
@@ -119,6 +137,30 @@ EXAMPLES:
         week: bool,
     },
 
+    /// Start the REST API server for Watch app sync
+    #[cfg(feature = "serve")]
+    #[command(after_help = "\
+EXAMPLES:
+  tl serve             Start API server on port 9746
+  tl serve --port 8080 Start on a custom port")]
+    Serve {
+        /// Port to listen on
+        #[arg(long, default_value_t = 9746)]
+        port: u16,
+        /// Enable BLE peripheral for iPhone sync
+        #[cfg(feature = "ble")]
+        #[arg(long)]
+        ble: bool,
+        /// Enable iCloud sync
+        #[cfg(feature = "icloud")]
+        #[arg(long)]
+        icloud: bool,
+    },
+
+    /// Open the interactive TUI dashboard
+    #[cfg(feature = "tui")]
+    Ui,
+
     /// Manage todo list
     #[command(after_help = "\
 EXAMPLES:
@@ -199,11 +241,61 @@ enum TodoAction {
     },
 }
 
+#[cfg(feature = "serve")]
+fn run_server(port: u16, #[allow(unused)] enable_ble: bool, #[allow(unused)] enable_icloud: bool) {
+    let conn = open_db();
+    mdns::advertise(port);
+
+    #[cfg(feature = "ble")]
+    if enable_ble {
+        ble::start(port);
+    }
+
+    #[cfg(feature = "icloud")]
+    if enable_icloud {
+        let db = std::sync::Arc::new(std::sync::Mutex::new(open_db()));
+        icloud::start_background_sync(db);
+    }
+
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    rt.block_on(server::run(conn, port));
+}
+
 fn main() {
     let cli = Cli::parse();
     let conn = open_db();
 
     match cli.command {
+        #[cfg(feature = "serve")]
+        Commands::Serve {
+            port,
+            #[cfg(feature = "ble")]
+            ble: enable_ble,
+            #[cfg(feature = "icloud")]
+            icloud: enable_icloud,
+        } => {
+            drop(conn);
+
+            let ble_flag;
+            #[cfg(feature = "ble")]
+            { ble_flag = enable_ble; }
+            #[cfg(not(feature = "ble"))]
+            { ble_flag = false; }
+
+            let icloud_flag;
+            #[cfg(feature = "icloud")]
+            { icloud_flag = enable_icloud; }
+            #[cfg(not(feature = "icloud"))]
+            { icloud_flag = false; }
+
+            run_server(port, ble_flag, icloud_flag);
+            return;
+        }
+        #[cfg(feature = "tui")]
+        Commands::Ui => {
+            tui::run(&conn);
+            return;
+        }
         Commands::Start => timer::start(&conn),
         Commands::Stop => timer::stop(&conn),
         Commands::Pause => timer::pause(&conn),

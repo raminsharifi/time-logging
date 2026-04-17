@@ -1,0 +1,74 @@
+name: TimeLogger
+options:
+  bundleIdPrefix: com.raminsharifi
+  deploymentTarget:
+    iOS: "17.0"
+
+schemes:
+  TimeLogger:
+    build:
+      targets:
+        TimeLogger: all
+        TimeLoggerWidgetsiOS: all
+    run:
+      config: Debug
+
+targets:
+  TimeLogger:
+    type: application
+    platform: iOS
+    sources:
+      - path: TimeLogger
+        excludes:
+          - Info.plist
+    info:
+      path: TimeLogger/Info.plist
+      properties:
+        UILaunchScreen: {}
+        CFBundleDisplayName: TimeLogger
+        UIBackgroundModes:
+          - bluetooth-central
+        NSBluetoothAlwaysUsageDescription: "TimeLogger uses Bluetooth to sync with your Mac."
+        NSSupportsLiveActivities: true
+    settings:
+      SWIFT_VERSION: "5.9"
+      PRODUCT_BUNDLE_IDENTIFIER: com.raminsharifi.TimeLogger
+      CODE_SIGN_STYLE: Automatic
+      DEVELOPMENT_TEAM: ""
+      TARGETED_DEVICE_FAMILY: "1"
+      INFOPLIST_KEY_UIApplicationSceneManifest_Generation: true
+      INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+    entitlements:
+      path: TimeLogger/TimeLogger.entitlements
+      properties:
+        com.apple.developer.icloud-container-identifiers:
+          - iCloud.com.raminsharifi.TimeLogger
+        com.apple.developer.icloud-services:
+          - CloudKit
+        com.apple.security.application-groups:
+          - group.com.raminsharifi.TimeLogger
+    dependencies:
+      - target: TimeLoggerWidgetsiOS
+
+  TimeLoggerWidgetsiOS:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: TimeLoggerWidgetsiOS
+    info:
+      path: TimeLoggerWidgetsiOS/Info.plist
+      properties:
+        CFBundleDisplayName: TimeLoggerWidgets
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      SWIFT_VERSION: "5.9"
+      PRODUCT_BUNDLE_IDENTIFIER: com.raminsharifi.TimeLogger.widgets
+      CODE_SIGN_STYLE: Automatic
+      DEVELOPMENT_TEAM: ""
+      TARGETED_DEVICE_FAMILY: "1"
+    entitlements:
+      path: TimeLoggerWidgetsiOS/TimeLoggerWidgetsiOS.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.raminsharifi.TimeLogger

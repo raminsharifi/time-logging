@@ -1,0 +1,561 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		04D7763EE033E438F8D8842A /* CloudKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C04B6367941A8F89FF247FB /* CloudKitManager.swift */; };
+		11F04277B078F1551F8899D5 /* TimeLoggerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27AE88DDABC4C2753899BDE /* TimeLoggerApp.swift */; };
+		15634180F42EACBB194B1DC5 /* ActiveTimerLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA54AE4BC3A1D5E330CDBD8 /* ActiveTimerLocal.swift */; };
+		198A5124D185F8CF97794EDD /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F2559A807CFE31D01F3C24 /* BLEManager.swift */; };
+		28E3DB8D945CCF9C61FA46AE /* TimeLoggerWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48C208666BD124E16D09C60A /* TimeLoggerWidgets.swift */; };
+		3151E3492E18D2FC0B932478 /* Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2255DC3E4FC7D357051785 /* Formatting.swift */; };
+		37E8367E79FA38E0720CD332 /* GlassComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494EB89E20D151382C8626FC /* GlassComponents.swift */; };
+		3B11C00D0D9F21AA00FBC8D9 /* BreakPeriod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5652E57F94EA4E28AA0FD5 /* BreakPeriod.swift */; };
+		428A8080C342425277D1183E /* AnalyticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6E39F0F39F85A343021B6DC /* AnalyticsView.swift */; };
+		4AC81D33F91E8742E7779D3F /* TodoItemLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F5B74266C21AE4A3F8F786 /* TodoItemLocal.swift */; };
+		56D95FC972B6E2DFFAF8F1C6 /* TimeEntryLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECC9C2D9935879FC9C191D9 /* TimeEntryLocal.swift */; };
+		60E5C692DAC829847AAFA04F /* WidgetBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659A2790306ECB811B20A0AB /* WidgetBridge.swift */; };
+		70F8191BCB2865952F8AE95B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80373AAF38DD3054A0D75B8D /* SettingsView.swift */; };
+		768B336E486EECC93D349BD3 /* PendingDeletion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7894F3F79F79BDE6E726B90B /* PendingDeletion.swift */; };
+		906AAF811EC232A4A2E9264E /* TimerAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4D4FECF2462067BE900CF7 /* TimerAppIntents.swift */; };
+		B00D9C656A4E568B91CA5D5F /* SyncMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF163C5CFDBCBD609290D8E1 /* SyncMetadata.swift */; };
+		B4B50677BFA0513A1B587B31 /* EntriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6045516D821BE747A0B9B8B /* EntriesView.swift */; };
+		B5BB4F4A207F72AF703E7E3F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA33956557B57C3AABC26035 /* ContentView.swift */; };
+		BD5B1FE45E5E302979D30B43 /* EntryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E3B4C7AC2C1E7F85F8C4B1 /* EntryDetailView.swift */; };
+		C8A6149C993114AE2C5DB91E /* BLEConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4088DB1000D42C61E850DC4 /* BLEConstants.swift */; };
+		CBA9FB795C6D2106DFC1AD9E /* SyncEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5771F8EC5DF446BF0E43F27 /* SyncEngine.swift */; };
+		D1C6389137BDCC065E0C7480 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7ADC85F34F87EBADD3C0B4 /* DesignSystem.swift */; };
+		D58A2E55D9D7291791681927 /* TimerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D25E05707F98FA4736B317D /* TimerWidget.swift */; };
+		D5F35E6CB3DA98AB40E1EBC1 /* Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB88047DD2D8DAD3149C00EC /* Shared.swift */; };
+		E3D3BECB3C3637E7C60751F7 /* NewTimerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1632127582D56A8980F82039 /* NewTimerSheet.swift */; };
+		E612EEB00C53D9E99F8EECB6 /* TimersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5596490CD14962EA5840816A /* TimersView.swift */; };
+		E7A1EDE69D8B89EBE5C3CA69 /* TodosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177849236F57616A4ECD6DF5 /* TodosView.swift */; };
+		EA598A0392BC214CDB20B9D1 /* TimeLoggerWidgetsiOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = EB454CBE394A6FA773AFFD24 /* TimeLoggerWidgetsiOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FDDA731D30DD01503CE94F5B /* TimerLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9531F45E07BFF30BC37C8F3C /* TimerLiveActivity.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B236C78F4BFCE4574CCB75DD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4AE9277BC894C6528062CE13 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B6E8466EF3B4CCB4087B05B4;
+			remoteInfo = TimeLoggerWidgetsiOS;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D2BB32B279647557C9AE949B /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				EA598A0392BC214CDB20B9D1 /* TimeLoggerWidgetsiOS.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		06F2559A807CFE31D01F3C24 /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
+		1632127582D56A8980F82039 /* NewTimerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTimerSheet.swift; sourceTree = "<group>"; };
+		177849236F57616A4ECD6DF5 /* TodosView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodosView.swift; sourceTree = "<group>"; };
+		2AEB0B4CBF0A319E563F48CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		3ECC9C2D9935879FC9C191D9 /* TimeEntryLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeEntryLocal.swift; sourceTree = "<group>"; };
+		45F5B74266C21AE4A3F8F786 /* TodoItemLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoItemLocal.swift; sourceTree = "<group>"; };
+		48C208666BD124E16D09C60A /* TimeLoggerWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLoggerWidgets.swift; sourceTree = "<group>"; };
+		494EB89E20D151382C8626FC /* GlassComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassComponents.swift; sourceTree = "<group>"; };
+		4B7ADC85F34F87EBADD3C0B4 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		5596490CD14962EA5840816A /* TimersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimersView.swift; sourceTree = "<group>"; };
+		5B5652E57F94EA4E28AA0FD5 /* BreakPeriod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakPeriod.swift; sourceTree = "<group>"; };
+		659A2790306ECB811B20A0AB /* WidgetBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBridge.swift; sourceTree = "<group>"; };
+		6C04B6367941A8F89FF247FB /* CloudKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitManager.swift; sourceTree = "<group>"; };
+		7894F3F79F79BDE6E726B90B /* PendingDeletion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingDeletion.swift; sourceTree = "<group>"; };
+		79E3B4C7AC2C1E7F85F8C4B1 /* EntryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryDetailView.swift; sourceTree = "<group>"; };
+		7D25E05707F98FA4736B317D /* TimerWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerWidget.swift; sourceTree = "<group>"; };
+		80373AAF38DD3054A0D75B8D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		9531F45E07BFF30BC37C8F3C /* TimerLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerLiveActivity.swift; sourceTree = "<group>"; };
+		A05218D450E8FF1AE7D6A28A /* TimeLogger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimeLogger.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10355026926AF25127CB9E4 /* TimeLogger.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TimeLogger.entitlements; sourceTree = "<group>"; };
+		BBA54AE4BC3A1D5E330CDBD8 /* ActiveTimerLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveTimerLocal.swift; sourceTree = "<group>"; };
+		C27AE88DDABC4C2753899BDE /* TimeLoggerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLoggerApp.swift; sourceTree = "<group>"; };
+		CA33956557B57C3AABC26035 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		D4088DB1000D42C61E850DC4 /* BLEConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEConstants.swift; sourceTree = "<group>"; };
+		D6E39F0F39F85A343021B6DC /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsView.swift; sourceTree = "<group>"; };
+		E6045516D821BE747A0B9B8B /* EntriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntriesView.swift; sourceTree = "<group>"; };
+		EB454CBE394A6FA773AFFD24 /* TimeLoggerWidgetsiOS.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TimeLoggerWidgetsiOS.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5771F8EC5DF446BF0E43F27 /* SyncEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncEngine.swift; sourceTree = "<group>"; };
+		FA4D4FECF2462067BE900CF7 /* TimerAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerAppIntents.swift; sourceTree = "<group>"; };
+		FB88047DD2D8DAD3149C00EC /* Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared.swift; sourceTree = "<group>"; };
+		FC2255DC3E4FC7D357051785 /* Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatting.swift; sourceTree = "<group>"; };
+		FF163C5CFDBCBD609290D8E1 /* SyncMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncMetadata.swift; sourceTree = "<group>"; };
+		FF43E05AAB14BD051861D568 /* TimeLoggerWidgetsiOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TimeLoggerWidgetsiOS.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		06B1359257C183F484470BD1 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				D6E39F0F39F85A343021B6DC /* AnalyticsView.swift */,
+				E6045516D821BE747A0B9B8B /* EntriesView.swift */,
+				79E3B4C7AC2C1E7F85F8C4B1 /* EntryDetailView.swift */,
+				1632127582D56A8980F82039 /* NewTimerSheet.swift */,
+				80373AAF38DD3054A0D75B8D /* SettingsView.swift */,
+				5596490CD14962EA5840816A /* TimersView.swift */,
+				177849236F57616A4ECD6DF5 /* TodosView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		32746B5BA9EBE1AAB0AC3971 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				D4088DB1000D42C61E850DC4 /* BLEConstants.swift */,
+				4B7ADC85F34F87EBADD3C0B4 /* DesignSystem.swift */,
+				FC2255DC3E4FC7D357051785 /* Formatting.swift */,
+				494EB89E20D151382C8626FC /* GlassComponents.swift */,
+				659A2790306ECB811B20A0AB /* WidgetBridge.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		4E3DE302C0F26E4F5EF9C7A4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A05218D450E8FF1AE7D6A28A /* TimeLogger.app */,
+				EB454CBE394A6FA773AFFD24 /* TimeLoggerWidgetsiOS.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		58F32B48DE5FC362FC098196 = {
+			isa = PBXGroup;
+			children = (
+				738DF01AD97D74D7B2DF6098 /* TimeLogger */,
+				8E42C1EEA3E4AD55FE72D88C /* TimeLoggerWidgetsiOS */,
+				4E3DE302C0F26E4F5EF9C7A4 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		738DF01AD97D74D7B2DF6098 /* TimeLogger */ = {
+			isa = PBXGroup;
+			children = (
+				CA33956557B57C3AABC26035 /* ContentView.swift */,
+				B10355026926AF25127CB9E4 /* TimeLogger.entitlements */,
+				C27AE88DDABC4C2753899BDE /* TimeLoggerApp.swift */,
+				91A106ED7C1196CB51FB42E1 /* Models */,
+				7A54682F5432955B6338D472 /* Networking */,
+				32746B5BA9EBE1AAB0AC3971 /* Utilities */,
+				06B1359257C183F484470BD1 /* Views */,
+			);
+			path = TimeLogger;
+			sourceTree = "<group>";
+		};
+		7A54682F5432955B6338D472 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				06F2559A807CFE31D01F3C24 /* BLEManager.swift */,
+				6C04B6367941A8F89FF247FB /* CloudKitManager.swift */,
+				F5771F8EC5DF446BF0E43F27 /* SyncEngine.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		8E42C1EEA3E4AD55FE72D88C /* TimeLoggerWidgetsiOS */ = {
+			isa = PBXGroup;
+			children = (
+				2AEB0B4CBF0A319E563F48CC /* Info.plist */,
+				FB88047DD2D8DAD3149C00EC /* Shared.swift */,
+				48C208666BD124E16D09C60A /* TimeLoggerWidgets.swift */,
+				FF43E05AAB14BD051861D568 /* TimeLoggerWidgetsiOS.entitlements */,
+				FA4D4FECF2462067BE900CF7 /* TimerAppIntents.swift */,
+				9531F45E07BFF30BC37C8F3C /* TimerLiveActivity.swift */,
+				7D25E05707F98FA4736B317D /* TimerWidget.swift */,
+			);
+			path = TimeLoggerWidgetsiOS;
+			sourceTree = "<group>";
+		};
+		91A106ED7C1196CB51FB42E1 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				BBA54AE4BC3A1D5E330CDBD8 /* ActiveTimerLocal.swift */,
+				5B5652E57F94EA4E28AA0FD5 /* BreakPeriod.swift */,
+				7894F3F79F79BDE6E726B90B /* PendingDeletion.swift */,
+				FF163C5CFDBCBD609290D8E1 /* SyncMetadata.swift */,
+				3ECC9C2D9935879FC9C191D9 /* TimeEntryLocal.swift */,
+				45F5B74266C21AE4A3F8F786 /* TodoItemLocal.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		883EE8433B40772682F024AC /* TimeLogger */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 28AC4F8F2CB12D8BF3314D7E /* Build configuration list for PBXNativeTarget "TimeLogger" */;
+			buildPhases = (
+				C453D249D7BE6A16895E105E /* Sources */,
+				D2BB32B279647557C9AE949B /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F913BBACB4EE2964210E0841 /* PBXTargetDependency */,
+			);
+			name = TimeLogger;
+			packageProductDependencies = (
+			);
+			productName = TimeLogger;
+			productReference = A05218D450E8FF1AE7D6A28A /* TimeLogger.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B6E8466EF3B4CCB4087B05B4 /* TimeLoggerWidgetsiOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3818C3E41E373503C3BB7FC9 /* Build configuration list for PBXNativeTarget "TimeLoggerWidgetsiOS" */;
+			buildPhases = (
+				B41975069EEE099B2E9BCC8F /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TimeLoggerWidgetsiOS;
+			packageProductDependencies = (
+			);
+			productName = TimeLoggerWidgetsiOS;
+			productReference = EB454CBE394A6FA773AFFD24 /* TimeLoggerWidgetsiOS.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4AE9277BC894C6528062CE13 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					883EE8433B40772682F024AC = {
+						ProvisioningStyle = Automatic;
+					};
+					B6E8466EF3B4CCB4087B05B4 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 00B18B5E9ACA2C4BDDAAF233 /* Build configuration list for PBXProject "TimeLogger" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 58F32B48DE5FC362FC098196;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 4E3DE302C0F26E4F5EF9C7A4 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				883EE8433B40772682F024AC /* TimeLogger */,
+				B6E8466EF3B4CCB4087B05B4 /* TimeLoggerWidgetsiOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B41975069EEE099B2E9BCC8F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D5F35E6CB3DA98AB40E1EBC1 /* Shared.swift in Sources */,
+				28E3DB8D945CCF9C61FA46AE /* TimeLoggerWidgets.swift in Sources */,
+				906AAF811EC232A4A2E9264E /* TimerAppIntents.swift in Sources */,
+				FDDA731D30DD01503CE94F5B /* TimerLiveActivity.swift in Sources */,
+				D58A2E55D9D7291791681927 /* TimerWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C453D249D7BE6A16895E105E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				15634180F42EACBB194B1DC5 /* ActiveTimerLocal.swift in Sources */,
+				428A8080C342425277D1183E /* AnalyticsView.swift in Sources */,
+				C8A6149C993114AE2C5DB91E /* BLEConstants.swift in Sources */,
+				198A5124D185F8CF97794EDD /* BLEManager.swift in Sources */,
+				3B11C00D0D9F21AA00FBC8D9 /* BreakPeriod.swift in Sources */,
+				04D7763EE033E438F8D8842A /* CloudKitManager.swift in Sources */,
+				B5BB4F4A207F72AF703E7E3F /* ContentView.swift in Sources */,
+				D1C6389137BDCC065E0C7480 /* DesignSystem.swift in Sources */,
+				B4B50677BFA0513A1B587B31 /* EntriesView.swift in Sources */,
+				BD5B1FE45E5E302979D30B43 /* EntryDetailView.swift in Sources */,
+				3151E3492E18D2FC0B932478 /* Formatting.swift in Sources */,
+				37E8367E79FA38E0720CD332 /* GlassComponents.swift in Sources */,
+				E3D3BECB3C3637E7C60751F7 /* NewTimerSheet.swift in Sources */,
+				768B336E486EECC93D349BD3 /* PendingDeletion.swift in Sources */,
+				70F8191BCB2865952F8AE95B /* SettingsView.swift in Sources */,
+				CBA9FB795C6D2106DFC1AD9E /* SyncEngine.swift in Sources */,
+				B00D9C656A4E568B91CA5D5F /* SyncMetadata.swift in Sources */,
+				56D95FC972B6E2DFFAF8F1C6 /* TimeEntryLocal.swift in Sources */,
+				11F04277B078F1551F8899D5 /* TimeLoggerApp.swift in Sources */,
+				E612EEB00C53D9E99F8EECB6 /* TimersView.swift in Sources */,
+				4AC81D33F91E8742E7779D3F /* TodoItemLocal.swift in Sources */,
+				E7A1EDE69D8B89EBE5C3CA69 /* TodosView.swift in Sources */,
+				60E5C692DAC829847AAFA04F /* WidgetBridge.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F913BBACB4EE2964210E0841 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B6E8466EF3B4CCB4087B05B4 /* TimeLoggerWidgetsiOS */;
+			targetProxy = B236C78F4BFCE4574CCB75DD /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		00D53A221BFA4CD69174207A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TimeLoggerWidgetsiOS/TimeLoggerWidgetsiOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5GG57Z8282;
+				INFOPLIST_FILE = TimeLoggerWidgetsiOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.raminsharifi.TimeLogger.widgets;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		155F533EC9260E83058B1766 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TimeLoggerWidgetsiOS/TimeLoggerWidgetsiOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5GG57Z8282;
+				INFOPLIST_FILE = TimeLoggerWidgetsiOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.raminsharifi.TimeLogger.widgets;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		295ABCAB01F6898F9E76D615 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = TimeLogger/TimeLogger.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5GG57Z8282;
+				INFOPLIST_FILE = TimeLogger/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.raminsharifi.TimeLogger;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		499BF02FEB3883B1ACE1D9BA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = TimeLogger/TimeLogger.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5GG57Z8282;
+				INFOPLIST_FILE = TimeLogger/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.raminsharifi.TimeLogger;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		76995BD248BE74B711A71563 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		90642B2B663F027AECA129C5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		00B18B5E9ACA2C4BDDAAF233 /* Build configuration list for PBXProject "TimeLogger" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				76995BD248BE74B711A71563 /* Debug */,
+				90642B2B663F027AECA129C5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		28AC4F8F2CB12D8BF3314D7E /* Build configuration list for PBXNativeTarget "TimeLogger" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				499BF02FEB3883B1ACE1D9BA /* Debug */,
+				295ABCAB01F6898F9E76D615 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		3818C3E41E373503C3BB7FC9 /* Build configuration list for PBXNativeTarget "TimeLoggerWidgetsiOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				155F533EC9260E83058B1766 /* Debug */,
+				00D53A221BFA4CD69174207A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4AE9277BC894C6528062CE13 /* Project object */;
+}

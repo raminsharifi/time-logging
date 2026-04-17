@@ -1,0 +1,33 @@
+name: TimeLoggerMac
+options:
+  bundleIdPrefix: com.raminsharifi
+  deploymentTarget:
+    macOS: "14.0"
+
+schemes:
+  TimeLoggerMac:
+    build:
+      targets:
+        TimeLoggerMac: all
+    run:
+      config: Debug
+
+targets:
+  TimeLoggerMac:
+    type: application
+    platform: macOS
+    sources:
+      - path: TimeLogger
+        excludes:
+          - Info.plist
+    info:
+      path: TimeLogger/Info.plist
+      properties:
+        CFBundleDisplayName: TimeLogger
+        LSUIElement: false
+    settings:
+      SWIFT_VERSION: "5.9"
+      PRODUCT_BUNDLE_IDENTIFIER: com.raminsharifi.TimeLogger.mac
+      PRODUCT_NAME: TimeLogger
+      CODE_SIGN_STYLE: Automatic
+      DEVELOPMENT_TEAM: ""

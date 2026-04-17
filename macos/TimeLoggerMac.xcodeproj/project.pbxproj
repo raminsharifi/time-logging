@@ -1,0 +1,393 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		157BD0134BAB6CA74722DAC6 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5EEDBF276781092BE9D778E /* Models.swift */; };
+		1C2F0407C58F7502FBFDEF63 /* EntriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D2CA0D9ECA2BD50C75EECE /* EntriesView.swift */; };
+		24F11741C7FBD0220864A25F /* NewTimerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C466ED8D6996AD76D87ECB /* NewTimerSheet.swift */; };
+		31EAD7AA93C786670E0E350F /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07CDAAED8743BDC34B903A53 /* DesignSystem.swift */; };
+		49E334B3847B502315C7BA54 /* MenuBarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE2501D52C5125CCA96945E /* MenuBarContent.swift */; };
+		4DFF5641611A3A9F35743074 /* EntryDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 486D003BD1F43ABB9C234326 /* EntryDetailSheet.swift */; };
+		7897BA847DFB10DD4F0A88E5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6074FF59633903EE2BBA9307 /* ContentView.swift */; };
+		9566C2F1C86C207FCE000DCD /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558517EBCBBC64D67686B562 /* APIClient.swift */; };
+		A1FEA538713E03B2AF2F5564 /* TodosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EEE1CA69C00F363082F0709 /* TodosView.swift */; };
+		A9E13817E85C9334F101EEA6 /* DevicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC211A76E6F440B520DB7E5B /* DevicesView.swift */; };
+		C260ADD7D6A8D2CC67D460C1 /* PomodoroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E345615D3169C03BC096C7A9 /* PomodoroView.swift */; };
+		CF5AE8F8A5D197A89FE288FD /* MenuBarLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1646EFB4037198D4983939 /* MenuBarLabel.swift */; };
+		D179C410A69DFAE51209B0D5 /* TimersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BE94188B33BEE57F7D87A65 /* TimersView.swift */; };
+		D237B8B735F9861509D0FDF9 /* AnalyticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF77EA3DE2ECBD4AF1571DD5 /* AnalyticsView.swift */; };
+		D48FDBEA71FDD17B7BBD2407 /* TimeLoggerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDF210A1140F365CA4C9B9E /* TimeLoggerApp.swift */; };
+		E0085C782F4C0CC1AD110416 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BCD2A75C8923E2006D74E8 /* HotkeyManager.swift */; };
+		F3B09DD6ECEE1763C75C98C4 /* GlassComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2484EC889DFCE6D282860EA /* GlassComponents.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		07CDAAED8743BDC34B903A53 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		08C466ED8D6996AD76D87ECB /* NewTimerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTimerSheet.swift; sourceTree = "<group>"; };
+		0EEE1CA69C00F363082F0709 /* TodosView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodosView.swift; sourceTree = "<group>"; };
+		1AE2501D52C5125CCA96945E /* MenuBarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContent.swift; sourceTree = "<group>"; };
+		2BE94188B33BEE57F7D87A65 /* TimersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimersView.swift; sourceTree = "<group>"; };
+		3DDF210A1140F365CA4C9B9E /* TimeLoggerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLoggerApp.swift; sourceTree = "<group>"; };
+		486D003BD1F43ABB9C234326 /* EntryDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryDetailSheet.swift; sourceTree = "<group>"; };
+		558517EBCBBC64D67686B562 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		57D2CA0D9ECA2BD50C75EECE /* EntriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntriesView.swift; sourceTree = "<group>"; };
+		6074FF59633903EE2BBA9307 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A2484EC889DFCE6D282860EA /* GlassComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassComponents.swift; sourceTree = "<group>"; };
+		B5C7E8846B75D7D58969F9F1 /* TimeLogger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimeLogger.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C5EEDBF276781092BE9D778E /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		DC211A76E6F440B520DB7E5B /* DevicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesView.swift; sourceTree = "<group>"; };
+		DF77EA3DE2ECBD4AF1571DD5 /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsView.swift; sourceTree = "<group>"; };
+		E345615D3169C03BC096C7A9 /* PomodoroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroView.swift; sourceTree = "<group>"; };
+		EB1646EFB4037198D4983939 /* MenuBarLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarLabel.swift; sourceTree = "<group>"; };
+		F2BCD2A75C8923E2006D74E8 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		45A0BEB393EFFA314353AEBB = {
+			isa = PBXGroup;
+			children = (
+				74582FB2283D5A25934829DE /* TimeLogger */,
+				B7B6A0E5E4E9CBE7D4A17649 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		597B7D1C5DA71525B28221E0 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				C5EEDBF276781092BE9D778E /* Models.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		70D33D883483BFBF88D28094 /* MenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				1AE2501D52C5125CCA96945E /* MenuBarContent.swift */,
+				EB1646EFB4037198D4983939 /* MenuBarLabel.swift */,
+			);
+			path = MenuBar;
+			sourceTree = "<group>";
+		};
+		74582FB2283D5A25934829DE /* TimeLogger */ = {
+			isa = PBXGroup;
+			children = (
+				6074FF59633903EE2BBA9307 /* ContentView.swift */,
+				3DDF210A1140F365CA4C9B9E /* TimeLoggerApp.swift */,
+				70D33D883483BFBF88D28094 /* MenuBar */,
+				597B7D1C5DA71525B28221E0 /* Models */,
+				B6A9E8F697088C2CA8C9F08B /* Networking */,
+				A2A44621E9A0FA621771EB9F /* Utilities */,
+				82A144B4DDE623E732C049FF /* Views */,
+			);
+			path = TimeLogger;
+			sourceTree = "<group>";
+		};
+		82A144B4DDE623E732C049FF /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				DF77EA3DE2ECBD4AF1571DD5 /* AnalyticsView.swift */,
+				DC211A76E6F440B520DB7E5B /* DevicesView.swift */,
+				57D2CA0D9ECA2BD50C75EECE /* EntriesView.swift */,
+				486D003BD1F43ABB9C234326 /* EntryDetailSheet.swift */,
+				08C466ED8D6996AD76D87ECB /* NewTimerSheet.swift */,
+				E345615D3169C03BC096C7A9 /* PomodoroView.swift */,
+				2BE94188B33BEE57F7D87A65 /* TimersView.swift */,
+				0EEE1CA69C00F363082F0709 /* TodosView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A2A44621E9A0FA621771EB9F /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				07CDAAED8743BDC34B903A53 /* DesignSystem.swift */,
+				A2484EC889DFCE6D282860EA /* GlassComponents.swift */,
+				F2BCD2A75C8923E2006D74E8 /* HotkeyManager.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		B6A9E8F697088C2CA8C9F08B /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				558517EBCBBC64D67686B562 /* APIClient.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		B7B6A0E5E4E9CBE7D4A17649 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B5C7E8846B75D7D58969F9F1 /* TimeLogger.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7DB04F1F5E863B2EC556B464 /* TimeLoggerMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 37CABEBB3C174D53A3BBB10D /* Build configuration list for PBXNativeTarget "TimeLoggerMac" */;
+			buildPhases = (
+				E18F6F16C8376E4C1AFB1DDE /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TimeLoggerMac;
+			packageProductDependencies = (
+			);
+			productName = TimeLoggerMac;
+			productReference = B5C7E8846B75D7D58969F9F1 /* TimeLogger.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		974CBB677E5EE66917359265 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					7DB04F1F5E863B2EC556B464 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 655CEC8023BF441A025B322B /* Build configuration list for PBXProject "TimeLoggerMac" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 45A0BEB393EFFA314353AEBB;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = B7B6A0E5E4E9CBE7D4A17649 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7DB04F1F5E863B2EC556B464 /* TimeLoggerMac */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E18F6F16C8376E4C1AFB1DDE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9566C2F1C86C207FCE000DCD /* APIClient.swift in Sources */,
+				D237B8B735F9861509D0FDF9 /* AnalyticsView.swift in Sources */,
+				7897BA847DFB10DD4F0A88E5 /* ContentView.swift in Sources */,
+				31EAD7AA93C786670E0E350F /* DesignSystem.swift in Sources */,
+				A9E13817E85C9334F101EEA6 /* DevicesView.swift in Sources */,
+				1C2F0407C58F7502FBFDEF63 /* EntriesView.swift in Sources */,
+				4DFF5641611A3A9F35743074 /* EntryDetailSheet.swift in Sources */,
+				F3B09DD6ECEE1763C75C98C4 /* GlassComponents.swift in Sources */,
+				E0085C782F4C0CC1AD110416 /* HotkeyManager.swift in Sources */,
+				49E334B3847B502315C7BA54 /* MenuBarContent.swift in Sources */,
+				CF5AE8F8A5D197A89FE288FD /* MenuBarLabel.swift in Sources */,
+				157BD0134BAB6CA74722DAC6 /* Models.swift in Sources */,
+				24F11741C7FBD0220864A25F /* NewTimerSheet.swift in Sources */,
+				C260ADD7D6A8D2CC67D460C1 /* PomodoroView.swift in Sources */,
+				D48FDBEA71FDD17B7BBD2407 /* TimeLoggerApp.swift in Sources */,
+				D179C410A69DFAE51209B0D5 /* TimersView.swift in Sources */,
+				A1FEA538713E03B2AF2F5564 /* TodosView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		4B224F4DFF67AF4C655A2840 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 5GG57Z8282;
+				INFOPLIST_FILE = TimeLogger/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.raminsharifi.TimeLogger.mac;
+				PRODUCT_NAME = TimeLogger;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		772F049E195C2CC833E2E96B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 5GG57Z8282;
+				INFOPLIST_FILE = TimeLogger/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.raminsharifi.TimeLogger.mac;
+				PRODUCT_NAME = TimeLogger;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		A6DCCD5A6A04CC499F81DCEE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		CC356BD6AE68B50231DAB7DB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		37CABEBB3C174D53A3BBB10D /* Build configuration list for PBXNativeTarget "TimeLoggerMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				772F049E195C2CC833E2E96B /* Debug */,
+				4B224F4DFF67AF4C655A2840 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		655CEC8023BF441A025B322B /* Build configuration list for PBXProject "TimeLoggerMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CC356BD6AE68B50231DAB7DB /* Debug */,
+				A6DCCD5A6A04CC499F81DCEE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 974CBB677E5EE66917359265 /* Project object */;
+}

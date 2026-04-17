@@ -1,5 +1,12 @@
 # Build
 /target
+ios/build/
+macos/build/
+watchos/build/
+
+# Xcode
+**/xcuserdata/
+DerivedData/
 
 # macOS
 .DS_Store

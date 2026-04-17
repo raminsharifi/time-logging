@@ -1,0 +1,66 @@
+name: TimeLogger
+options:
+  bundleIdPrefix: com.raminsharifi
+  deploymentTarget:
+    watchOS: "11.0"
+
+schemes:
+  TimeLogger Watch App:
+    build:
+      targets:
+        TimeLogger Watch App: all
+        TimeLoggerWidgetExtension: all
+    run:
+      config: Debug
+
+targets:
+  TimeLogger Watch App:
+    type: application
+    platform: watchOS
+    sources:
+      - path: TimeLogger Watch App
+        excludes:
+          - Info.plist
+    info:
+      path: TimeLogger Watch App/Info.plist
+      properties:
+        WKApplication: true
+        WKWatchOnly: true
+        NSBluetoothAlwaysUsageDescription: "TimeLogger uses Bluetooth to sync with your Mac."
+        NSBluetoothPeripheralUsageDescription: "TimeLogger uses Bluetooth to sync with your Mac."
+        WKBackgroundModes:
+          - bluetooth-central
+    settings:
+      SWIFT_VERSION: "5.9"
+      PRODUCT_BUNDLE_IDENTIFIER: com.raminsharifi.TimeLogger.watchkitapp
+      CODE_SIGN_STYLE: Automatic
+      DEVELOPMENT_TEAM: ""
+    entitlements:
+      path: TimeLogger Watch App/TimeLogger.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.raminsharifi.TimeLogger
+    dependencies:
+      - target: TimeLoggerWidgetExtension
+
+  TimeLoggerWidgetExtension:
+    type: app-extension
+    platform: watchOS
+    sources:
+      - path: TimeLoggerWidget
+    info:
+      path: TimeLoggerWidgetExtension-Info.plist
+      properties:
+        CFBundleDisplayName: TimeLoggerWidget
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      SWIFT_VERSION: "5.9"
+      PRODUCT_BUNDLE_IDENTIFIER: com.raminsharifi.TimeLogger.watchkitapp.widget
+      CODE_SIGN_STYLE: Automatic
+      DEVELOPMENT_TEAM: ""
+    entitlements:
+      path: TimeLoggerWidgetExtension.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.raminsharifi.TimeLogger

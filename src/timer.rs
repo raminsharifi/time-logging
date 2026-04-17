@@ -85,6 +85,7 @@ pub fn start(conn: &Connection) {
         state: "running".into(),
         breaks: vec![],
         todo_id,
+        last_modified: 0,
     };
     insert_active(conn, &timer);
 
@@ -117,6 +118,7 @@ pub fn stop(conn: &Connection) {
         active_secs,
         breaks,
         todo_id: timer.todo_id,
+        last_modified: 0,
     };
 
     insert_entry(conn, &entry);
@@ -217,6 +219,7 @@ pub fn resume(conn: &Connection) {
         state: "running".into(),
         breaks: timer_to_resume.breaks.clone(),
         todo_id: timer_to_resume.todo_id,
+        last_modified: 0,
     };
     if let Some(last) = resumed.breaks.last_mut() {
         if last.end_ts == 0 {
@@ -282,6 +285,7 @@ pub fn restart(conn: &Connection) {
         state: "running".into(),
         breaks: vec![],
         todo_id: last_entry.todo_id,
+        last_modified: 0,
     };
     insert_active(conn, &timer);
 
@@ -339,6 +343,7 @@ pub fn switch(conn: &Connection) {
             state: "paused".into(),
             breaks: r.breaks.clone(),
             todo_id: r.todo_id,
+            last_modified: 0,
         };
         paused_timer.breaks.push(proto::Break {
             start_ts: now_ts,
@@ -357,6 +362,7 @@ pub fn switch(conn: &Connection) {
         state: "running".into(),
         breaks: selected.breaks.clone(),
         todo_id: selected.todo_id,
+        last_modified: 0,
     };
     if let Some(last) = resumed.breaks.last_mut() {
         if last.end_ts == 0 {
