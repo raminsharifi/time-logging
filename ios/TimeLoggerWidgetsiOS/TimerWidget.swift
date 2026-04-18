@@ -162,6 +162,19 @@ struct WHorizon: View {
                             .offset(x: geo.size.width * CGFloat(frac))
                     }
 
+                    // Minor ticks — only visible when zoomed close enough to
+                    // read them. At ±1h span this draws a minute-marker ruler
+                    // along the bottom edge; at full 24h view we return nothing
+                    // and the row stays clean.
+                    ForEach(Self.minorTicks(windowStart: win.start, windowEnd: win.end), id: \.self) { tickTs in
+                        let frac = (tickTs - win.start) / win.length
+                        Rectangle()
+                            .fill(WidgetTokens.mute)
+                            .opacity(0.55)
+                            .frame(width: 1, height: 4)
+                            .offset(x: geo.size.width * CGFloat(frac), y: geo.size.height - 4)
+                    }
+
                     // Completed entries — clipped to the visible window.
                     ForEach(Array(snapshot.todayEntries.enumerated()), id: \.offset) { _, e in
                         let startTs = Double(e.startedAt)
@@ -265,6 +278,22 @@ struct WHorizon: View {
         else if span >= 4 * 3600 { spacing = 3600 }
         else if span >= 1 * 3600 { spacing = 15 * 60 }
         else { spacing = 5 * 60 }
+        return tickTimes(windowStart: windowStart, windowEnd: windowEnd, spacing: spacing)
+    }
+
+    /// Finer-grained ruler marks. Returns an empty list when the window is
+    /// too wide to resolve them — keeps the bar clean at the 24h view.
+    static func minorTicks(windowStart: Double, windowEnd: Double) -> [Double] {
+        let span = max(windowEnd - windowStart, 1)
+        let spacing: Double
+        if span <= 5 * 60 { spacing = 1 }          // every second
+        else if span <= 30 * 60 { spacing = 10 }   // every 10 seconds
+        else if span <= 3 * 3600 { spacing = 60 }  // every minute
+        else { return [] }
+        return tickTimes(windowStart: windowStart, windowEnd: windowEnd, spacing: spacing)
+    }
+
+    private static func tickTimes(windowStart: Double, windowEnd: Double, spacing: Double) -> [Double] {
         let firstTick = ceil(windowStart / spacing) * spacing
         var ticks: [Double] = []
         var t = firstTick
