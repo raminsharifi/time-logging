@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
    LastUpgradeVersion = "1430"
-   version = "1.3">
+   version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES">
+      buildImplicitDependencies = "YES"
+      runPostActionsOnFailure = "NO">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -15,8 +16,22 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "7DB04F1F5E863B2EC556B464"
-               BuildableName = "TimeLogger.app"
+               BuildableName = "TimeLoggerMac.app"
                BlueprintName = "TimeLoggerMac"
+               ReferencedContainer = "container:TimeLoggerMac.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "644A4CB3C8B5EC52F3408204"
+               BuildableName = "TimeLoggerWidgets.appex"
+               BlueprintName = "TimeLoggerWidgets"
                ReferencedContainer = "container:TimeLoggerMac.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -26,12 +41,13 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      onlyGenerateCoverageForSpecifiedTargets = "NO">
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7DB04F1F5E863B2EC556B464"
-            BuildableName = "TimeLogger.app"
+            BuildableName = "TimeLoggerMac.app"
             BlueprintName = "TimeLoggerMac"
             ReferencedContainer = "container:TimeLoggerMac.xcodeproj">
          </BuildableReference>
@@ -54,11 +70,13 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7DB04F1F5E863B2EC556B464"
-            BuildableName = "TimeLogger.app"
+            BuildableName = "TimeLoggerMac.app"
             BlueprintName = "TimeLoggerMac"
             ReferencedContainer = "container:TimeLoggerMac.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -71,7 +89,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7DB04F1F5E863B2EC556B464"
-            BuildableName = "TimeLogger.app"
+            BuildableName = "TimeLoggerMac.app"
             BlueprintName = "TimeLoggerMac"
             ReferencedContainer = "container:TimeLoggerMac.xcodeproj">
          </BuildableReference>

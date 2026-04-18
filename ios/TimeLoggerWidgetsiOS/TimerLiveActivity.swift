@@ -6,60 +6,72 @@ struct TimerLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: TimerActivityAttributes.self) { context in
             LockScreenView(state: context.state)
-                .activityBackgroundTint(Color.black.opacity(0.55))
-                .activitySystemActionForegroundColor(.white)
+                .activityBackgroundTint(WidgetTokens.bg)
+                .activitySystemActionForegroundColor(WidgetTokens.ink)
         } dynamicIsland: { context in
             let tint = WidgetPalette.color(for: context.state.category)
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    HStack(spacing: 8) {
-                        Circle().fill(tint).frame(width: 10, height: 10)
-                        Text(context.state.category)
-                            .font(.system(.caption, design: .rounded).weight(.semibold))
-                            .foregroundStyle(.secondary)
+                    HStack(spacing: 6) {
+                        Rectangle().fill(tint).frame(width: 5, height: 5)
+                        Text(context.state.category.uppercased())
+                            .font(WidgetTokens.label(9))
+                            .tracking(1.2)
+                            .foregroundStyle(tint)
                             .lineLimit(1)
                     }
                     .padding(.leading, 6)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
                     Text(timerInterval: context.state.startedAt...Date.distantFuture, countsDown: false)
-                        .font(.system(.title3, design: .monospaced).weight(.semibold))
-                        .foregroundStyle(tint)
+                        .font(WidgetTokens.mono(18, weight: .semibold))
+                        .foregroundStyle(WidgetTokens.ink)
                         .monospacedDigit()
                         .padding(.trailing, 6)
                 }
                 DynamicIslandExpandedRegion(.center) {
                     Text(context.state.name)
-                        .font(.system(.headline, design: .rounded))
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(WidgetTokens.ink)
                         .lineLimit(1)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     HStack {
-                        Image(systemName: context.state.isRunning ? "play.fill" : "pause.fill")
-                            .foregroundStyle(tint)
-                        Text(context.state.isRunning ? "Running" : "Paused")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        if context.state.isRunning {
+                            HStack(spacing: 4) {
+                                Circle().fill(tint).frame(width: 4, height: 4)
+                                Text("RUNNING")
+                                    .font(WidgetTokens.label(8))
+                                    .tracking(1.2)
+                                    .foregroundStyle(tint)
+                            }
+                        } else {
+                            Text("PAUSED")
+                                .font(WidgetTokens.label(8))
+                                .tracking(1.2)
+                                .foregroundStyle(WidgetTokens.mute)
+                        }
                         Spacer()
                         Text("Started \(context.state.startedAt, style: .time)")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
+                            .font(WidgetTokens.mono(9))
+                            .foregroundStyle(WidgetTokens.dim)
                     }
                     .padding(.horizontal, 6)
                 }
             } compactLeading: {
-                Circle().fill(tint).frame(width: 10, height: 10)
+                Rectangle().fill(tint).frame(width: 6, height: 6)
             } compactTrailing: {
                 Text(timerInterval: context.state.startedAt...Date.distantFuture, countsDown: false)
-                    .font(.system(.caption, design: .monospaced).weight(.semibold))
+                    .font(WidgetTokens.mono(11, weight: .semibold))
                     .foregroundStyle(tint)
                     .monospacedDigit()
                     .frame(maxWidth: 56)
             } minimal: {
-                Circle().fill(tint).frame(width: 14, height: 14)
-                    .overlay(
-                        Circle().stroke(tint.opacity(0.4), lineWidth: 2)
-                    )
+                ZStack {
+                    Rectangle()
+                        .fill(tint)
+                        .frame(width: 8, height: 8)
+                }
             }
             .keylineTint(tint)
         }
@@ -72,42 +84,30 @@ private struct LockScreenView: View {
     var body: some View {
         let tint = WidgetPalette.color(for: state.category)
         HStack(spacing: 14) {
-            ZStack {
-                Circle()
-                    .stroke(tint.opacity(0.25), lineWidth: 4)
-                Circle()
-                    .trim(from: 0, to: state.isRunning ? 0.78 : 0.08)
-                    .stroke(
-                        AngularGradient(
-                            gradient: Gradient(colors: [tint, tint.opacity(0.5), tint]),
-                            center: .center
-                        ),
-                        style: StrokeStyle(lineWidth: 4, lineCap: .round)
-                    )
-                    .rotationEffect(.degrees(-90))
-                Image(systemName: state.isRunning ? "timer" : "pause")
-                    .font(.system(size: 20, weight: .semibold, design: .rounded))
-                    .foregroundStyle(tint)
-            }
-            .frame(width: 56, height: 56)
-
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 6) {
+                    Rectangle().fill(tint).frame(width: 6, height: 6)
+                    Text(state.category.uppercased())
+                        .font(WidgetTokens.label(9))
+                        .tracking(1.2)
+                        .foregroundStyle(tint)
+                }
                 Text(state.name)
-                    .font(.system(.headline, design: .rounded))
-                    .foregroundStyle(.white)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(WidgetTokens.ink)
                     .lineLimit(1)
-                Text(state.category)
-                    .font(.caption)
-                    .foregroundStyle(.white.opacity(0.7))
-                    .lineLimit(1)
+                Text(state.isRunning ? "RUNNING" : "PAUSED")
+                    .font(WidgetTokens.label(8))
+                    .tracking(1.2)
+                    .foregroundStyle(state.isRunning ? tint : WidgetTokens.mute)
             }
-            Spacer(minLength: 0)
+            Spacer()
             Text(timerInterval: state.startedAt...Date.distantFuture, countsDown: false)
-                .font(.system(.title2, design: .monospaced).weight(.semibold))
-                .foregroundStyle(tint)
+                .font(WidgetTokens.mono(26, weight: .semibold))
+                .foregroundStyle(WidgetTokens.ink)
                 .monospacedDigit()
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.vertical, 14)
     }
 }

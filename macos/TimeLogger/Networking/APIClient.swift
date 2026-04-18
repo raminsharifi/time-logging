@@ -4,16 +4,29 @@ import Foundation
 final class APIClient: ObservableObject {
     @Published var isConnected = false
     @Published var timers: [TimerResponse] = []
+    @Published private(set) var baseURL: String
 
-    private let baseURL: String
+    private let identity: DeviceIdentity
     private let session: URLSession
     private var pollingTask: Task<Void, Never>?
 
     init(port: Int = 9746) {
+        self.identity = .shared
         self.baseURL = "http://127.0.0.1:\(port)/api/v1"
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 5
         self.session = URLSession(configuration: config)
+    }
+
+    /// Point the client at a different server. Used when the user selects a
+    /// peer Mac (or a custom host) in the Devices pane.
+    func configure(endpoint: ServerSelection.Endpoint) {
+        let newBase = endpoint.baseURL
+        guard newBase != baseURL else { return }
+        baseURL = newBase
+        isConnected = false
+        timers = []
+        Task { await refreshTimers() }
     }
 
     /// Start a single shared polling loop. Call once from the app entry point.
@@ -46,6 +59,22 @@ final class APIClient: ObservableObject {
         guard let _: [String: Bool] = try? await get("/ping") else { return false }
         isConnected = true
         return true
+    }
+
+    /// Ping an arbitrary host:port (used when validating a peer before
+    /// switching to it).
+    func pingEndpoint(host: String, port: Int) async -> Bool {
+        guard let url = URL(string: "http://\(host):\(port)/api/v1/ping") else { return false }
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 3
+        identity.apply(to: &request)
+        do {
+            let (_, response) = try await session.data(for: request)
+            guard let http = response as? HTTPURLResponse else { return false }
+            return http.statusCode < 400
+        } catch {
+            return false
+        }
     }
 
     // MARK: - Timers
@@ -123,26 +152,30 @@ final class APIClient: ObservableObject {
 
     // MARK: - HTTP Helpers
 
+    private func makeRequest(_ path: String, method: String) -> URLRequest {
+        var request = URLRequest(url: URL(string: baseURL + path)!)
+        request.httpMethod = method
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        identity.apply(to: &request)
+        return request
+    }
+
     private func get<T: Decodable>(_ path: String) async throws -> T {
-        let url = URL(string: baseURL + path)!
-        let (data, response) = try await session.data(from: url)
+        let request = makeRequest(path, method: "GET")
+        let (data, response) = try await session.data(for: request)
         try checkResponse(response)
         return try JSONDecoder().decode(T.self, from: data)
     }
 
     private func post<T: Decodable>(_ path: String) async throws -> T {
-        var request = URLRequest(url: URL(string: baseURL + path)!)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let request = makeRequest(path, method: "POST")
         let (data, response) = try await session.data(for: request)
         try checkResponse(response)
         return try JSONDecoder().decode(T.self, from: data)
     }
 
     private func post<B: Encodable, T: Decodable>(_ path: String, body: B) async throws -> T {
-        var request = URLRequest(url: URL(string: baseURL + path)!)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        var request = makeRequest(path, method: "POST")
         request.httpBody = try JSONEncoder().encode(body)
         let (data, response) = try await session.data(for: request)
         try checkResponse(response)
@@ -150,9 +183,7 @@ final class APIClient: ObservableObject {
     }
 
     private func patch<B: Encodable, T: Decodable>(_ path: String, body: B) async throws -> T {
-        var request = URLRequest(url: URL(string: baseURL + path)!)
-        request.httpMethod = "PATCH"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        var request = makeRequest(path, method: "PATCH")
         request.httpBody = try JSONEncoder().encode(body)
         let (data, response) = try await session.data(for: request)
         try checkResponse(response)
@@ -160,8 +191,7 @@ final class APIClient: ObservableObject {
     }
 
     private func delete(_ path: String) async throws {
-        var request = URLRequest(url: URL(string: baseURL + path)!)
-        request.httpMethod = "DELETE"
+        let request = makeRequest(path, method: "DELETE")
         let (_, response) = try await session.data(for: request)
         try checkResponse(response)
     }

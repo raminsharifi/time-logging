@@ -91,6 +91,7 @@ struct SettingsView: View {
         switch syncEngine.transport {
         case .ble: return TL.Palette.iris
         case .wifi: return TL.Palette.sky
+        case .icloud: return TL.Palette.violet
         case .offline: return TL.Palette.ember
         }
     }

@@ -85,7 +85,7 @@ struct EntryDetailView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, TL.Space.s)
-        .glassCard(tint: tint, cornerRadius: TL.Radius.xl, padding: TL.Space.s)
+        .glassCard(tint: tint, cornerRadius: TL.Radius.xl, padding: TL.Space.m)
     }
 
     private func stat(_ label: String, value: String) -> some View {
@@ -116,7 +116,7 @@ struct EntryDetailView: View {
                 .background { RoundedRectangle(cornerRadius: 12).fill(.ultraThinMaterial) }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .glassCard(tint: TL.Palette.sky, cornerRadius: TL.Radius.l, padding: TL.Space.s)
+        .glassCard(tint: TL.Palette.sky, cornerRadius: TL.Radius.l, padding: TL.Space.m)
     }
 
     // MARK: - Breaks timeline
@@ -166,7 +166,7 @@ struct EntryDetailView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .glassCard(tint: TL.Palette.citrine, cornerRadius: TL.Radius.l, padding: TL.Space.s)
+            .glassCard(tint: TL.Palette.citrine, cornerRadius: TL.Radius.l, padding: TL.Space.m)
         }
     }
 
@@ -205,7 +205,7 @@ struct EntryDetailView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .glassCard(tint: TL.Palette.iris, cornerRadius: TL.Radius.l, padding: TL.Space.s)
+        .glassCard(tint: TL.Palette.iris, cornerRadius: TL.Radius.l, padding: TL.Space.m)
     }
 
     @ViewBuilder

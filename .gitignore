@@ -19,3 +19,7 @@ DerivedData/
 
 # Environment
 .env
+
+# Backups / export archives
+/Archive.zip
+/ios.zip

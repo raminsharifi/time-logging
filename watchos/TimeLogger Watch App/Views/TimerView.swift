@@ -41,51 +41,66 @@ struct TimerView: View {
     private func runningHero(_ timer: ActiveTimerLocal) -> some View {
         let tint = TL.categoryColor(timer.category)
 
-        ZStack {
-            RingProgress(progress: nil, tint: tint, lineWidth: 10, glow: !dimmed) {
-                VStack(spacing: 2) {
-                    Text(timer.name)
-                        .font(.system(.caption, design: .rounded).weight(.semibold))
-                        .lineLimit(1)
-                    TimelineView(dimmed ? .periodic(from: .now, by: 60) : .periodic(from: .now, by: 1)) { ctx in
-                        Text(TL.clock(liveSeconds(timer, now: ctx.date)))
-                            .font(TL.TypeScale.mono(dimmed ? 20 : 26, weight: .semibold))
-                            .foregroundStyle(dimmed ? .secondary : .primary)
-                            .contentTransition(.numericText())
-                    }
-                    CategoryChip(name: timer.category, compact: true)
-                        .opacity(dimmed ? 0.5 : 1)
-                }
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 4) {
+                PulsingDot(color: tint, size: 4)
+                Text(timer.category.uppercased())
+                    .font(TL.TypeScale.label(9))
+                    .tracking(1.2)
+                    .foregroundStyle(tint)
             }
-            .padding(14)
-        }
-        .overlay(alignment: .bottom) {
+            .opacity(dimmed ? 0.5 : 1)
+
+            TimelineView(dimmed ? .periodic(from: .now, by: 60) : .periodic(from: .now, by: 1)) { ctx in
+                Text(TL.clock(liveSeconds(timer, now: ctx.date)))
+                    .font(TL.TypeScale.mono(dimmed ? 24 : 32, weight: .medium))
+                    .foregroundStyle(dimmed ? TL.Palette.mute : TL.Palette.ink)
+                    .tracking(-1.2)
+                    .contentTransition(.numericText())
+                    .monospacedDigit()
+            }
+            .padding(.top, 2)
+
+            Text(timer.name)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(TL.Palette.ink)
+                .lineLimit(1)
+
+            // Mini horizon
+            WMiniHorizon(timer: timer)
+                .frame(height: 8)
+                .padding(.top, 4)
+
+            Spacer(minLength: 0)
+
             if !dimmed {
-                HStack(spacing: 10) {
-                    circleButton("pause.fill", color: TL.Palette.citrine) { pauseTimer(timer) }
-                    circleButton("stop.fill", color: TL.Palette.ember) { stopTimer(timer) }
-                    circleButton("plus", color: TL.Palette.emerald) { showStartSheet = true }
+                HStack(spacing: 6) {
+                    pillButton("PAUSE", bg: tint, fg: .black) {
+                        WKInterfaceDevice.current().play(.click)
+                        pauseTimer(timer)
+                    }
+                    pillButton("STOP", bg: Color(red: 0.16, green: 0.16, blue: 0.18), fg: TL.Palette.ink) {
+                        WKInterfaceDevice.current().play(.click)
+                        stopTimer(timer)
+                    }
                 }
-                .padding(.bottom, 2)
             }
         }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     @ViewBuilder
-    private func circleButton(_ systemName: String, color: Color, action: @escaping () -> Void) -> some View {
-        Button(action: {
-            WKInterfaceDevice.current().play(.click)
-            action()
-        }) {
-            Image(systemName: systemName)
-                .font(.system(size: 16, weight: .semibold))
-                .frame(width: 38, height: 38)
-                .background {
-                    Circle().fill(color.gradient)
-                }
-                .foregroundStyle(.white)
-                .shadow(color: color.opacity(0.5), radius: 6)
-                .contentShape(Circle())
+    private func pillButton(_ label: String, bg: Color, fg: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(label)
+                .font(TL.TypeScale.label(10))
+                .tracking(1.2)
+                .foregroundStyle(fg)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .background(Capsule().fill(bg))
         }
         .buttonStyle(.plain)
     }
@@ -192,7 +207,7 @@ struct TimerView: View {
                 switch syncEngine.transport {
                 case .ble:
                     _ = try? await bleManager.pauseTimer(id: sid)
-                case .wifi:
+                case .wifi, .icloud:
                     _ = try? await syncEngine.apiClient.pauseTimer(id: sid)
                 case .offline:
                     break
@@ -216,7 +231,7 @@ struct TimerView: View {
                 switch syncEngine.transport {
                 case .ble:
                     _ = try? await bleManager.resumeTimer(id: sid)
-                case .wifi:
+                case .wifi, .icloud:
                     _ = try? await syncEngine.apiClient.resumeTimer(id: sid)
                 case .offline:
                     break
@@ -243,7 +258,7 @@ struct TimerView: View {
                 switch syncEngine.transport {
                 case .ble:
                     _ = try? await bleManager.stopTimer(id: sid)
-                case .wifi:
+                case .wifi, .icloud:
                     _ = try? await syncEngine.apiClient.stopTimer(id: sid)
                 case .offline:
                     break
@@ -314,4 +329,49 @@ func updateWidget(running timer: ActiveTimerLocal?) {
 
 func formatDuration(_ secs: TimeInterval) -> String {
     TL.clock(Int64(secs))
+}
+
+// MARK: - Mini horizon for the watch running screen
+
+struct WMiniHorizon: View {
+    let timer: ActiveTimerLocal
+
+    @Query(sort: \TimeEntryLocal.startedAt, order: .forward)
+    private var entries: [TimeEntryLocal]
+
+    private var dayStart: Date {
+        Calendar.current.startOfDay(for: .now)
+    }
+
+    var body: some View {
+        GeometryReader { geo in
+            let dayLen: Double = 86400
+            let dayStartTs = dayStart.timeIntervalSince1970
+            ZStack(alignment: .topLeading) {
+                Rectangle().fill(TL.Palette.surface)
+                    .overlay { Rectangle().strokeBorder(TL.Palette.line, lineWidth: 1) }
+                ForEach(entries.filter { $0.startedAt >= dayStart }, id: \.localId) { e in
+                    let s = e.startedAt.timeIntervalSince1970 - dayStartTs
+                    let w = e.endedAt.timeIntervalSince1970 - e.startedAt.timeIntervalSince1970
+                    Rectangle()
+                        .fill(TL.categoryColor(e.category))
+                        .opacity(0.9)
+                        .frame(width: max(1, geo.size.width * CGFloat(w / dayLen)),
+                               height: geo.size.height - 2)
+                        .offset(x: geo.size.width * CGFloat(s / dayLen), y: 1)
+                }
+                let started = timer.startedAt.timeIntervalSince1970 - dayStartTs
+                let nowSecs = Date().timeIntervalSince1970 - dayStartTs
+                let color = TL.categoryColor(timer.category)
+                Rectangle()
+                    .fill(color)
+                    .frame(width: max(1, geo.size.width * CGFloat((nowSecs - started) / dayLen)),
+                           height: geo.size.height)
+                    .offset(x: geo.size.width * CGFloat(started / dayLen))
+                Rectangle().fill(Color.white)
+                    .frame(width: 2, height: geo.size.height + 2)
+                    .offset(x: geo.size.width * CGFloat(nowSecs / dayLen) - 1, y: -1)
+            }
+        }
+    }
 }

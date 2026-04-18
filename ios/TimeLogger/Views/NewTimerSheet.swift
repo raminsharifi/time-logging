@@ -127,7 +127,7 @@ struct NewTimerSheet: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .glassCard(tint: TL.Palette.emerald, cornerRadius: TL.Radius.l, padding: TL.Space.s)
+        .glassCard(tint: TL.Palette.emerald, cornerRadius: TL.Radius.l, padding: TL.Space.m)
     }
 
     // MARK: - Category
@@ -190,7 +190,7 @@ struct NewTimerSheet: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .glassCard(tint: tint, cornerRadius: TL.Radius.l, padding: TL.Space.s)
+        .glassCard(tint: tint, cornerRadius: TL.Radius.l, padding: TL.Space.m)
     }
 
     private var mergedCategorySuggestions: [String] {
@@ -225,7 +225,7 @@ struct NewTimerSheet: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .glassCard(tint: TL.Palette.sky, cornerRadius: TL.Radius.l, padding: TL.Space.s)
+            .glassCard(tint: TL.Palette.sky, cornerRadius: TL.Radius.l, padding: TL.Space.m)
         }
     }
 

@@ -5,6 +5,7 @@ import WidgetKit
 enum SyncTransport: String {
     case ble = "BLE"
     case wifi = "Wi-Fi"
+    case icloud = "iCloud"
     case offline = "Offline"
 }
 
@@ -100,7 +101,7 @@ final class SyncEngine {
             switch chosen {
             case .ble:
                 response = try await bleManager.sync(request)
-            case .wifi:
+            case .wifi, .icloud:
                 response = try await apiClient.sync(request)
             case .offline:
                 return

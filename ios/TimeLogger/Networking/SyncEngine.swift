@@ -6,6 +6,7 @@ import CloudKit
 enum SyncTransport: String {
     case ble = "BLE"
     case wifi = "Wi-Fi"
+    case icloud = "iCloud"
     case offline = "Offline"
 }
 
@@ -13,20 +14,27 @@ enum SyncTransport: String {
 final class SyncEngine: ObservableObject {
     let bleManager: BLEManager
     let cloudKit: CloudKitManager
+    let http: HTTPClient
     private var modelContext: ModelContext?
     private var syncDebounceTask: Task<Void, Never>?
 
     @Published var lastSyncDate: Date?
     @Published var syncError: String?
 
-    /// True when any remote transport (BLE or iCloud) is reachable.
+    /// Mesh-friendly: reacting within half a second after any mutation so
+    /// every device picks up start/pause/stop/break events near-instantly.
+    /// The CloudKit + BLE peripheral + Wi-Fi paths then propagate outward.
+    private let mutationDebounceNanos: UInt64 = 500_000_000
+
+    /// True when any remote transport (Wi-Fi, BLE, or iCloud) is reachable.
     var isOnline: Bool {
-        bleManager.isConnected || cloudKit.iCloudAvailable
+        http.isReachable || bleManager.isConnected || cloudKit.iCloudAvailable
     }
 
-    init(bleManager: BLEManager, cloudKit: CloudKitManager) {
+    init(bleManager: BLEManager, cloudKit: CloudKitManager, http: HTTPClient) {
         self.bleManager = bleManager
         self.cloudKit = cloudKit
+        self.http = http
     }
 
     func setModelContext(_ context: ModelContext) {
@@ -36,28 +44,72 @@ final class SyncEngine: ObservableObject {
     func scheduleSyncAfterMutation() {
         syncDebounceTask?.cancel()
         syncDebounceTask = Task {
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            try? await Task.sleep(nanoseconds: mutationDebounceNanos)
             guard !Task.isCancelled else { return }
             await performSync()
         }
     }
 
-    /// Main sync: tries CloudKit first (always available), then BLE if connected
+    /// Main sync: fan out over every available transport so events ripple
+    /// through the whole device mesh. Wi-Fi (direct HTTP to a chosen Mac) is
+    /// fastest when the user has selected a peer; BLE is fastest when the
+    /// Mac is nearby; iCloud is always-on and covers the rest.
     func performSync() async {
         syncError = nil
 
-        // CloudKit sync (primary - works regardless of proximity)
         if cloudKit.iCloudAvailable {
             await performCloudKitSync()
         }
 
-        // BLE sync (secondary - fast local sync when nearby)
+        if http.baseURL != nil {
+            await performHTTPSync()
+        }
+
         if bleManager.isConnected {
             await performBLESync()
         }
 
-        if !cloudKit.iCloudAvailable && !bleManager.isConnected {
+        if !isOnline {
             syncError = "No sync transport available"
+        }
+    }
+
+    // MARK: - Wi-Fi HTTP Sync
+
+    private func performHTTPSync() async {
+        guard let context = modelContext else { return }
+        do {
+            let meta = try getOrCreateSyncMetadata(context)
+            let request = APISyncRequest(
+                client_id: meta.clientId,
+                last_sync_ts: meta.lastSyncTimestamp,
+                changes: APISyncChanges(
+                    active_timers: gatherTimerChanges(context),
+                    time_entries: gatherEntryChanges(context),
+                    todos: gatherTodoChanges(context),
+                    deletions: gatherDeletions(context)
+                )
+            )
+            let response = try await http.sync(request)
+
+            applyBLEServerTimers(response.server_changes.active_timers, context: context)
+            applyBLEServerEntries(response.server_changes.time_entries, context: context)
+            applyBLEServerTodos(response.server_changes.todos, context: context)
+            applyBLEServerDeletions(response.server_changes.deletions, context: context)
+
+            for mapping in response.id_mappings {
+                applyIdMapping(mapping, context: context)
+            }
+
+            clearSyncFlags(context)
+            clearPendingDeletions(context)
+            meta.lastSyncTimestamp = response.new_sync_ts
+            try context.save()
+            lastSyncDate = Date()
+        } catch {
+            if syncError == nil {
+                syncError = "Wi-Fi: \(error.localizedDescription)"
+            }
         }
     }
 

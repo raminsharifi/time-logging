@@ -130,6 +130,7 @@ struct APIIdMapping: Codable {
     let server_id: Int
 }
 
+@MainActor
 @Observable
 final class APIClient {
     var baseURL: URL?
@@ -140,10 +141,23 @@ final class APIClient {
         return URLSession(configuration: config)
     }()
 
+    private var identity: DeviceIdentity { .shared }
+
+    private func headers() -> [String: String] {
+        let id = identity
+        return [
+            "X-Device-Id": id.deviceId,
+            "X-Device-Name": id.displayName,
+            "X-Device-Platform": id.platform,
+        ]
+    }
+
     func ping() async -> Bool {
         guard let url = baseURL?.appendingPathComponent("ping") else { return false }
+        var request = URLRequest(url: url)
+        for (k, v) in headers() { request.setValue(v, forHTTPHeaderField: k) }
         do {
-            let (_, response) = try await session.data(from: url)
+            let (_, response) = try await session.data(for: request)
             return (response as? HTTPURLResponse)?.statusCode == 200
         } catch {
             return false
@@ -203,7 +217,9 @@ final class APIClient {
         guard let url = baseURL?.appendingPathComponent(path) else {
             throw URLError(.badURL)
         }
-        let (data, _) = try await session.data(from: url)
+        var request = URLRequest(url: url)
+        for (k, v) in headers() { request.setValue(v, forHTTPHeaderField: k) }
+        let (data, _) = try await session.data(for: request)
         return try JSONDecoder().decode(T.self, from: data)
     }
 
@@ -214,6 +230,7 @@ final class APIClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        for (k, v) in headers() { request.setValue(v, forHTTPHeaderField: k) }
         if let body {
             request.httpBody = try JSONSerialization.data(withJSONObject: body)
         }
@@ -228,6 +245,7 @@ final class APIClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        for (k, v) in headers() { request.setValue(v, forHTTPHeaderField: k) }
         request.httpBody = try JSONEncoder().encode(body)
         let (data, _) = try await session.data(for: request)
         return try JSONDecoder().decode(T.self, from: data)

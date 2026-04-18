@@ -22,5 +22,13 @@
 	<string>1</string>
 	<key>LSUIElement</key>
 	<false/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>TimeLogger advertises a BLE peripheral so your iPhone and Apple Watch can sync timers instantly when nearby.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_tl._tcp</string>
+	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>TimeLogger browses your Wi-Fi for other Macs running the tl daemon so the mesh of your Apple devices stays in sync.</string>
 </dict>
 </plist>

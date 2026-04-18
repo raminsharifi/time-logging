@@ -170,7 +170,7 @@ struct BreaksView: View {
                     } else {
                         _ = try? await bleManager.pauseTimer(id: sid)
                     }
-                case .wifi:
+                case .wifi, .icloud:
                     if isOnBreak {
                         _ = try? await syncEngine.apiClient.resumeTimer(id: sid)
                     } else {

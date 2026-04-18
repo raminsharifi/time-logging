@@ -9,8 +9,10 @@
 /* Begin PBXBuildFile section */
 		0080D509200E23C6EC7F96DA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614AF19032AC9974CFFDEBBC /* SettingsView.swift */; };
 		08F1E9E3592AF1CC1DC4A94E /* ActiveTimerLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84BA3E618859A6B5817684F /* ActiveTimerLocal.swift */; };
+		196E49050AFBBECC8B6E3FD5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1014B9E9A4BD749F5284DA96 /* Assets.xcassets */; };
 		28DE77949BE70BE427093F1F /* SyncEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA0825543598F9B57626D60 /* SyncEngine.swift */; };
 		2CAEFC55612CCCFB8061AEF5 /* TimeLoggerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D623DFA19B64E4A7B9996C1A /* TimeLoggerWidget.swift */; };
+		3B6DBEB97C3A4B13A4A22140 /* DeviceIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F549C87D7896390CBB9372 /* DeviceIdentity.swift */; };
 		3E8CF7909933CA99FA292C97 /* BLEConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1693B07FDDFA5DCC568F4573 /* BLEConstants.swift */; };
 		3F7519E7521BD4D6B3F7EB42 /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169498B9B51BC6842D0BDE61 /* TimerView.swift */; };
 		4F9D2E30B9DC5E5C512B8CF9 /* TodoItemLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4565C9E0CA280F0B9E5F9E22 /* TodoItemLocal.swift */; };
@@ -57,11 +59,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1014B9E9A4BD749F5284DA96 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1693B07FDDFA5DCC568F4573 /* BLEConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEConstants.swift; sourceTree = "<group>"; };
 		169498B9B51BC6842D0BDE61 /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
 		1AA0825543598F9B57626D60 /* SyncEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncEngine.swift; sourceTree = "<group>"; };
 		21AB129DD131D8D11E7D6C74 /* TimeLoggerWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TimeLoggerWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		25D6FF57352A1F75666C01A2 /* PendingDeletion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingDeletion.swift; sourceTree = "<group>"; };
+		25F549C87D7896390CBB9372 /* DeviceIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentity.swift; sourceTree = "<group>"; };
 		3BC55988508CABC7CCBEDC97 /* TimeLoggerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLoggerApp.swift; sourceTree = "<group>"; };
 		4565C9E0CA280F0B9E5F9E22 /* TodoItemLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoItemLocal.swift; sourceTree = "<group>"; };
 		4BF86D4B9034535213E4BBFC /* TimeLogger Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TimeLogger Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -91,6 +95,7 @@
 			children = (
 				B84BA3E618859A6B5817684F /* ActiveTimerLocal.swift */,
 				717321D10D6D262B6153FFDF /* BreakPeriod.swift */,
+				25F549C87D7896390CBB9372 /* DeviceIdentity.swift */,
 				25D6FF57352A1F75666C01A2 /* PendingDeletion.swift */,
 				78D76346AED307D66AA15A5D /* SyncMetadata.swift */,
 				B9DDC206158AB0B5CD2E67A4 /* TimeEntryLocal.swift */,
@@ -149,6 +154,7 @@
 		D4FC67118DF98E5D0BC034B2 /* TimeLogger Watch App */ = {
 			isa = PBXGroup;
 			children = (
+				1014B9E9A4BD749F5284DA96 /* Assets.xcassets */,
 				AC60377079687DE0615A8FB3 /* ContentView.swift */,
 				8521CCF1630064596B96DF58 /* TimeLogger Watch App.entitlements */,
 				EE08DA0BEFE49DD64C052050 /* TimeLogger.entitlements */,
@@ -182,6 +188,7 @@
 			buildConfigurationList = AE1EADC5E4B6072C10D70472 /* Build configuration list for PBXNativeTarget "TimeLogger Watch App" */;
 			buildPhases = (
 				4A8DEB76435884089CDBA917 /* Sources */,
+				C5F371341951AC23B992A14E /* Resources */,
 				F744F99ED8F51D0E46CEEA3A /* Embed Foundation Extensions */,
 			);
 			buildRules = (
@@ -223,9 +230,11 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					656E2F842265CF9658B7961D = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					F7D1EA5A0E808291ECD19376 = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -250,6 +259,17 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		C5F371341951AC23B992A14E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				196E49050AFBBECC8B6E3FD5 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		20CCA4F276F845F6AF16F2B1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -271,6 +291,7 @@
 				EA941F8FB006953EE31C7C13 /* BreaksView.swift in Sources */,
 				A2E71FB9D3D88C67139080F3 /* ContentView.swift in Sources */,
 				FA90375DCCBFFA304C2AFB62 /* DesignSystem.swift in Sources */,
+				3B6DBEB97C3A4B13A4A22140 /* DeviceIdentity.swift in Sources */,
 				A386D62B50F79E1DA643B0DE /* GlassComponents.swift in Sources */,
 				FFC78BA3824E5B6F88776B0B /* LogSummaryView.swift in Sources */,
 				992F32520B602C9DAE602247 /* PendingDeletion.swift in Sources */,
@@ -303,7 +324,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TimeLoggerWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5GG57Z8282;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "TimeLoggerWidgetExtension-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -443,7 +464,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "TimeLogger Watch App/TimeLogger.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5GG57Z8282;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "TimeLogger Watch App/Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = com.raminsharifi.TimeLogger.watchkitapp;
 				SDKROOT = watchos;
@@ -459,7 +480,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "TimeLogger Watch App/TimeLogger.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5GG57Z8282;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "TimeLogger Watch App/Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = com.raminsharifi.TimeLogger.watchkitapp;
 				SDKROOT = watchos;
@@ -474,7 +495,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TimeLoggerWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5GG57Z8282;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "TimeLoggerWidgetExtension-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

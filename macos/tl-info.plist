@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>com.raminsharifi.timelogger.tl</string>
+    <key>CFBundleName</key>
+    <string>tl</string>
+    <key>CFBundleExecutable</key>
+    <string>tl</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>TimeLogger advertises a BLE peripheral so your iPhone and Apple Watch can sync timers instantly when nearby.</string>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>TimeLogger advertises its daemon over mDNS so your other Apple devices can discover and sync with this Mac.</string>
+    <key>NSBonjourServices</key>
+    <array>
+        <string>_tl._tcp</string>
+    </array>
+</dict>
+</plist>

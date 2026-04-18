@@ -4,8 +4,12 @@ import SwiftData
 @main
 struct TimeLoggerApp: App {
     let modelContainer: ModelContainer
+    let identity: DeviceIdentity
     let bleManager: BLEManager
     let cloudKit: CloudKitManager
+    let http: HTTPClient
+    let peers: PeerDiscovery
+    let selection: ServerSelection
     let syncEngine: SyncEngine
 
     init() {
@@ -23,27 +27,45 @@ struct TimeLoggerApp: App {
             fatalError("Failed to create ModelContainer: \(error)")
         }
 
+        identity = .shared
         let ble = BLEManager()
         let ck = CloudKitManager()
+        let httpClient = HTTPClient()
         bleManager = ble
         cloudKit = ck
-        syncEngine = SyncEngine(bleManager: ble, cloudKit: ck)
+        http = httpClient
+        peers = PeerDiscovery()
+        selection = ServerSelection()
+        syncEngine = SyncEngine(bleManager: ble, cloudKit: ck, http: httpClient)
     }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(identity)
                 .environmentObject(bleManager)
                 .environmentObject(cloudKit)
                 .environmentObject(syncEngine)
+                .environmentObject(http)
+                .environmentObject(peers)
+                .environmentObject(selection)
                 .onAppear {
                     syncEngine.setModelContext(modelContainer.mainContext)
-                    // Setup iCloud first, then start BLE scanning as fallback
+                    http.configure(selection.endpoint.baseURL)
+                    peers.start()
                     Task {
                         await cloudKit.setup()
+                        if http.baseURL != nil { _ = await http.ping() }
                         await syncEngine.performSync()
                     }
                     bleManager.startScanning()
+                }
+                .onChange(of: selection.endpoint) { _, newValue in
+                    http.configure(newValue.baseURL)
+                    Task {
+                        if http.baseURL != nil { _ = await http.ping() }
+                        await syncEngine.performSync()
+                    }
                 }
         }
         .modelContainer(modelContainer)

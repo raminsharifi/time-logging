@@ -3,340 +3,343 @@ import SwiftData
 
 struct TimersView: View {
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.verticalSizeClass) private var verticalSizeClass
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @EnvironmentObject var bleManager: BLEManager
     @EnvironmentObject var syncEngine: SyncEngine
 
-    @Query(sort: \ActiveTimerLocal.startedAt, order: .reverse) private var timers: [ActiveTimerLocal]
+    @Query(sort: \ActiveTimerLocal.startedAt, order: .reverse)
+    private var timers: [ActiveTimerLocal]
+    @Query(sort: \TimeEntryLocal.startedAt, order: .reverse)
+    private var allEntries: [TimeEntryLocal]
 
     @State private var showNewTimer = false
-    @State private var heroIndex = 0
-
-    private var heroHeight: CGFloat {
-        if verticalSizeClass == .compact { return 240 }
-        if dynamicTypeSize >= .accessibility1 { return 400 }
-        return UIScreen.main.bounds.height < 700 ? 300 : 360
-    }
-
-    private var ringHeight: CGFloat {
-        heroHeight - 140
-    }
 
     var runningTimer: ActiveTimerLocal? { timers.first { $0.isRunning } }
     var pausedTimers: [ActiveTimerLocal] { timers.filter { $0.isPaused } }
 
-    /// The "Now Playing" carousel stack: running first, then paused.
-    var heroStack: [ActiveTimerLocal] {
-        var arr: [ActiveTimerLocal] = []
-        if let r = runningTimer { arr.append(r) }
-        arr.append(contentsOf: pausedTimers)
-        return arr
+    private var dayStart: Int64 {
+        Int64(Calendar.current.startOfDay(for: Date()).timeIntervalSince1970)
+    }
+
+    private var todayEntries: [TimeEntryLocal] {
+        allEntries.filter { $0.startedAt >= dayStart }
+    }
+
+    private var todaySecs: Int64 {
+        todayEntries.reduce(Int64(0)) { $0 + $1.activeSecs }
+            + (runningTimer?.activeSecs ?? 0)
     }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: TL.Space.l) {
-                    headerRow
-
-                    if heroStack.isEmpty {
-                        emptyHero
-                    } else {
-                        heroCarousel
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                StatusStrip(
+                    title: "Now",
+                    caption: tlStatusCaption(),
+                    right: {
+                        HStack(spacing: 6) {
+                            if runningTimer != nil {
+                                PulsingDot(color: TL.Palette.accent, size: 5)
+                                MonoLabel("LIVE", size: 10, color: TL.Palette.ink).tracking(1.4)
+                            } else {
+                                MonoLabel("IDLE", size: 10, color: TL.Palette.mute)
+                            }
+                        }
                     }
+                )
+                .padding(.bottom, 4)
 
-                    if !pausedTimers.isEmpty {
-                        pausedListSection
-                    }
+                VStack(alignment: .leading, spacing: 20) {
+                    horizonBlock
+                    activeSession
+                    quickStart
+                    if !pausedTimers.isEmpty { pausedSection }
                 }
-                .padding(.horizontal, TL.Space.m)
-                .padding(.top, TL.Space.s)
+                .padding(.horizontal, TL.Space.l)
                 .padding(.bottom, TL.Space.l)
             }
-            .scrollContentBackground(.hidden)
-            .background(Color.clear)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("Timers")
-                        .font(TL.TypeScale.headline)
-                }
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        showNewTimer = true
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title2)
-                            .foregroundStyle(TL.Palette.emerald.gradient)
-                    }
-                }
-            }
-            .sheet(isPresented: $showNewTimer) {
-                NewTimerSheet()
-                    .presentationDetents([.medium, .large])
-                    .presentationBackground(.ultraThinMaterial)
-            }
+        }
+        .background(TL.Palette.bg)
+        .scrollContentBackground(.hidden)
+        .sheet(isPresented: $showNewTimer) {
+            NewTimerSheet()
+                .presentationDetents([.medium, .large])
+                .presentationBackground(TL.Palette.bg)
         }
     }
 
-    // MARK: - Header
+    // MARK: - Horizon
 
-    private var headerRow: some View {
-        HStack(spacing: 8) {
-            TransportBadge(transport: transportForUI)
-            Spacer()
-            if let running = runningTimer {
-                PulsingDot(color: TL.categoryColor(running.category))
-                Text("Active")
-                    .font(TL.TypeScale.caption2)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-
-    private var transportForUI: SyncTransport {
-        if bleManager.isConnected { return .ble }
-        if syncEngine.isOnline { return .wifi }
-        return .offline
-    }
-
-    // MARK: - Hero
-
-    @ViewBuilder
-    private var emptyHero: some View {
-        VStack(spacing: TL.Space.m) {
-            Image(systemName: "timer")
-                .font(.system(size: 54, weight: .light))
-                .foregroundStyle(.white.opacity(0.6))
-                .padding(.top, TL.Space.xl)
-
-            Text("Ready to focus")
-                .font(TL.TypeScale.title2)
-
-            Text("Tap the + button or swipe up to start a new timer.")
-                .font(TL.TypeScale.caption)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, TL.Space.l)
-
-            Button {
-                showNewTimer = true
-            } label: {
-                Label("Start Timer", systemImage: "play.fill")
-                    .frame(maxWidth: 280)
-            }
-            .buttonStyle(.glass(tint: TL.Palette.emerald, prominent: true))
-            .padding(.top, TL.Space.s)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, TL.Space.xl)
-        .glassCard(tint: TL.Palette.sky, cornerRadius: TL.Radius.xl, padding: TL.Space.m)
-    }
-
-    @ViewBuilder
-    private var heroCarousel: some View {
-        TabView(selection: $heroIndex) {
-            ForEach(Array(heroStack.enumerated()), id: \.element.localId) { idx, timer in
-                heroCard(timer)
-                    .padding(.horizontal, 2)
-                    .tag(idx)
-            }
-        }
-        .tabViewStyle(.page(indexDisplayMode: heroStack.count > 1 ? .always : .never))
-        .indexViewStyle(.page(backgroundDisplayMode: .always))
-        .frame(height: heroHeight)
-    }
-
-    @ViewBuilder
-    private func heroCard(_ timer: ActiveTimerLocal) -> some View {
-        let tint = TL.categoryColor(timer.category)
-        let isRunning = timer.isRunning
-
-        VStack(spacing: TL.Space.m) {
-            HStack {
-                CategoryChip(name: timer.category)
+    private var horizonBlock: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .firstTextBaseline) {
+                MonoLabel("Today · 24h horizon")
                 Spacer()
-                if isRunning {
-                    HStack(spacing: 4) {
-                        PulsingDot(color: tint)
-                        Text("RUNNING")
-                            .font(TL.TypeScale.caption2)
-                            .foregroundStyle(tint)
-                    }
-                } else {
-                    Text("PAUSED")
-                        .font(TL.TypeScale.caption2)
-                        .foregroundStyle(.secondary)
-                }
+                MonoLabel("\(TL.clockShort(todaySecs)) / 8h", color: TL.Palette.ink)
             }
+            HorizonBar(
+                entries: todayEntries.map { e in
+                    HorizonSegment(id: e.localId, startedAt: e.startedAt,
+                                   endedAt: e.endedAt, category: e.category)
+                },
+                activeStartedAt: runningTimer?.startedAt,
+                activeCategory: runningTimer?.category,
+                dayStart: dayStart,
+                height: 64
+            )
+        }
+    }
 
-            RingProgress(progress: nil, tint: tint, lineWidth: 12, glow: isRunning) {
-                VStack(spacing: 4) {
-                    Text(timer.name)
-                        .font(TL.TypeScale.headline)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 8)
-                    TimelineView(.periodic(from: .now, by: 1)) { _ in
-                        Text(TL.clock(timer.activeSecs))
-                            .font(TL.TypeScale.mono(40, weight: .semibold))
-                            .foregroundStyle(isRunning ? .primary : .secondary)
-                            .contentTransition(.numericText())
-                            .monospacedDigit()
+    // MARK: - Active session card
+
+    @ViewBuilder
+    private var activeSession: some View {
+        if let timer = runningTimer {
+            let tint = TL.categoryColor(timer.category)
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    CategoryTag(name: timer.category)
+                    Spacer()
+                    HStack(spacing: 6) {
+                        PulsingDot(color: tint, size: 5)
+                        MonoLabel("Running", size: 10, color: tint)
                     }
                 }
-            }
-            .frame(height: ringHeight)
 
-            HStack(spacing: TL.Space.s) {
-                if isRunning {
-                    Button {
-                        pauseTimer(timer)
-                    } label: {
+                Text(timer.name)
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(TL.Palette.ink)
+                    .tracking(-0.3)
+                    .padding(.top, 14)
+
+                TimelineView(.periodic(from: .now, by: 1)) { _ in
+                    MonoNum(TL.clock(timer.activeSecs), size: 56, weight: .medium, color: TL.Palette.ink)
+                        .padding(.top, 8)
+                        .padding(.bottom, 4)
+                }
+
+                HStack(spacing: 16) {
+                    MonoLabel("Started \(timeOfDay(timer.startedAt))")
+                    MonoLabel("·", color: TL.Palette.dim)
+                    MonoLabel("Breaks \(timer.breaks.count)")
+                    Spacer()
+                }
+                .padding(.bottom, 18)
+
+                HStack(spacing: 8) {
+                    Button { pause(timer) } label: {
                         Label("Pause", systemImage: "pause.fill")
-                            .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.glass(tint: TL.Palette.citrine, prominent: true))
-                } else {
-                    Button {
-                        resumeTimer(timer)
-                    } label: {
-                        Label("Resume", systemImage: "play.fill")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.glass(tint: TL.Palette.emerald, prominent: true))
-                }
+                    .buttonStyle(.tl(.secondary, fullWidth: true))
 
-                Button {
-                    stopTimer(timer)
-                } label: {
-                    Label("Stop", systemImage: "stop.fill")
-                        .frame(maxWidth: .infinity)
+                    Button { stop(timer) } label: {
+                        Label("Stop", systemImage: "stop.fill")
+                    }
+                    .buttonStyle(.tl(.ghost, fullWidth: true))
                 }
-                .buttonStyle(.glass(tint: TL.Palette.ember))
+            }
+            .padding(20)
+            .background {
+                RoundedRectangle(cornerRadius: TL.Radius.l, style: .continuous)
+                    .fill(LinearGradient(
+                        colors: [tint.opacity(0.08), TL.Palette.surface],
+                        startPoint: .top, endPoint: .bottom
+                    ))
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: TL.Radius.l, style: .continuous)
+                    .strokeBorder(tint.opacity(0.35), lineWidth: 1)
+            }
+            .overlay(alignment: .topLeading) { cornerTicks(tint) }
+        } else if let paused = pausedTimers.first {
+            let tint = TL.categoryColor(paused.category)
+            VStack(alignment: .leading, spacing: 14) {
+                HStack {
+                    CategoryTag(name: paused.category)
+                    Spacer()
+                    MonoLabel("Paused", size: 10, color: TL.Palette.mute)
+                }
+                Text(paused.name)
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(TL.Palette.ink)
+                MonoNum(TL.clock(paused.activeSecs), size: 48, weight: .medium, color: TL.Palette.mute)
+
+                Button { resume(paused) } label: {
+                    Label("Resume", systemImage: "play.fill")
+                }
+                .buttonStyle(.tl(.primary, fullWidth: true))
+            }
+            .padding(20)
+            .surface(cornerRadius: TL.Radius.l, padding: 0)
+            .overlay(alignment: .topLeading) { cornerTicks(tint) }
+        } else {
+            VStack(spacing: 10) {
+                MonoLabel("Idle")
+                Text("Nothing running.")
+                    .font(.system(size: 20))
+                    .foregroundStyle(TL.Palette.ink)
+                Button {
+                    showNewTimer = true
+                } label: {
+                    Label("Start session", systemImage: "play.fill")
+                }
+                .buttonStyle(.tl(.primary))
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 32)
+            .surface(padding: 0)
+        }
+    }
+
+    @ViewBuilder
+    private func cornerTicks(_ color: Color) -> some View {
+        ZStack(alignment: .topLeading) {
+            Rectangle().fill(color).frame(width: 28, height: 2)
+            Rectangle().fill(color).frame(width: 2, height: 28)
+        }
+    }
+
+    // MARK: - Quick start
+
+    private var quickStart: some View {
+        let cats = Array(Set(allEntries.map { $0.category })).prefix(4).sorted()
+        let fallback = ["Deep Work", "Meetings", "Review", "Admin"]
+        let shown = cats.isEmpty ? fallback : Array(cats)
+
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                MonoLabel("Quick start")
+                Spacer()
+                MonoLabel("Tap", color: TL.Palette.dim)
+            }
+            let columns = [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)]
+            LazyVGrid(columns: columns, spacing: 8) {
+                ForEach(shown, id: \.self) { cat in
+                    quickStartButton(cat)
+                }
             }
         }
-        .padding(TL.Space.m)
-        .glassCard(tint: tint, cornerRadius: TL.Radius.xl, padding: 0, elevation: 2)
+    }
+
+    @ViewBuilder
+    private func quickStartButton(_ category: String) -> some View {
+        let tint = TL.categoryColor(category)
+        let today = allEntries
+            .filter { $0.category == category && $0.startedAt >= dayStart }
+            .reduce(Int64(0)) { $0 + $1.activeSecs }
+
+        Button {
+            quickStart(category)
+        } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 8) {
+                        Circle().fill(tint).frame(width: 6, height: 6)
+                        MonoLabel(category, color: TL.Palette.ink)
+                    }
+                    MonoNum("\(TL.clockShort(today)) today", size: 10, color: TL.Palette.dim)
+                }
+                Spacer()
+                Image(systemName: "play.fill")
+                    .font(.system(size: 10))
+                    .foregroundStyle(tint)
+            }
+            .padding(14)
+            .surface(padding: 0, background: TL.Palette.surface)
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Paused list
 
-    @ViewBuilder
-    private var pausedListSection: some View {
-        VStack(alignment: .leading, spacing: TL.Space.s) {
-            HStack {
-                Text("PAUSED · \(pausedTimers.count)")
-                    .font(TL.TypeScale.caption2)
-                    .foregroundStyle(.secondary)
-                Spacer()
-            }
-            ForEach(pausedTimers, id: \.localId) { t in
-                PausedTimerRow(timer: t,
-                               onResume: { resumeTimer(t) },
-                               onStop: { stopTimer(t) },
-                               onDelete: { deleteTimer(t) })
+    private var pausedSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            MonoLabel("Paused · \(pausedTimers.count)")
+            VStack(spacing: 6) {
+                ForEach(pausedTimers, id: \.localId) { t in
+                    pausedRow(t)
+                }
             }
         }
+    }
+
+    @ViewBuilder
+    private func pausedRow(_ t: ActiveTimerLocal) -> some View {
+        let tint = TL.categoryColor(t.category)
+        HStack(spacing: 12) {
+            Circle().fill(tint).frame(width: 5, height: 5)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(t.name)
+                    .font(.system(size: 13))
+                    .foregroundStyle(TL.Palette.ink)
+                MonoNum(TL.clock(t.activeSecs), size: 10, color: TL.Palette.mute)
+            }
+            Spacer()
+            Button { resume(t) } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "play.fill").font(.system(size: 9))
+                    Text("GO").tracking(1.2).font(TL.TypeScale.label(10))
+                }
+                .foregroundStyle(TL.Palette.ink)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .overlay {
+                    RoundedRectangle(cornerRadius: TL.Radius.m)
+                        .strokeBorder(TL.Palette.line, lineWidth: 1)
+                }
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .surface(padding: 0)
     }
 
     // MARK: - Actions
 
-    private func pauseTimer(_ timer: ActiveTimerLocal) {
-        timer.pause()
+    private func pause(_ t: ActiveTimerLocal) {
+        t.pause()
         try? modelContext.save()
         syncEngine.scheduleSyncAfterMutation()
     }
 
-    private func resumeTimer(_ timer: ActiveTimerLocal) {
-        if let running = runningTimer, running.localId != timer.localId {
+    private func resume(_ t: ActiveTimerLocal) {
+        if let running = runningTimer, running.localId != t.localId {
             running.pause()
         }
-        timer.resume()
+        t.resume()
         try? modelContext.save()
         syncEngine.scheduleSyncAfterMutation()
     }
 
-    private func stopTimer(_ timer: ActiveTimerLocal) {
+    private func stop(_ t: ActiveTimerLocal) {
         let now = Int64(Date().timeIntervalSince1970)
         let entry = TimeEntryLocal(
-            name: timer.name,
-            category: timer.category,
-            startedAt: timer.startedAt,
-            endedAt: now,
-            activeSecs: timer.activeSecs,
-            breaks: timer.breaks,
-            todoId: timer.todoId
+            name: t.name, category: t.category,
+            startedAt: t.startedAt, endedAt: now,
+            activeSecs: t.activeSecs, breaks: t.breaks, todoId: t.todoId
         )
         modelContext.insert(entry)
-
-        if let serverId = timer.serverId {
-            modelContext.insert(PendingDeletion(tableName: "active_timers", recordServerId: serverId))
+        if let sid = t.serverId {
+            modelContext.insert(PendingDeletion(tableName: "active_timers", recordServerId: sid))
         }
-        modelContext.delete(timer)
+        modelContext.delete(t)
         try? modelContext.save()
         syncEngine.scheduleSyncAfterMutation()
     }
 
-    private func deleteTimer(_ timer: ActiveTimerLocal) {
-        if let serverId = timer.serverId {
-            modelContext.insert(PendingDeletion(tableName: "active_timers", recordServerId: serverId))
-        }
-        modelContext.delete(timer)
+    private func quickStart(_ category: String) {
+        if let running = runningTimer { running.pause() }
+        let t = ActiveTimerLocal(name: "Focus", category: category, todoId: nil)
+        modelContext.insert(t)
         try? modelContext.save()
         syncEngine.scheduleSyncAfterMutation()
     }
-}
 
-// MARK: - Paused row
+    // MARK: - Helpers
 
-struct PausedTimerRow: View {
-    let timer: ActiveTimerLocal
-    let onResume: () -> Void
-    let onStop: () -> Void
-    let onDelete: () -> Void
-
-    var body: some View {
-        let tint = TL.categoryColor(timer.category)
-        HStack(spacing: TL.Space.s) {
-            Rectangle()
-                .fill(tint.gradient)
-                .frame(width: 3)
-                .cornerRadius(1.5)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(timer.name)
-                    .font(TL.TypeScale.callout)
-                    .lineLimit(1)
-                HStack(spacing: 6) {
-                    CategoryChip(name: timer.category, compact: true)
-                    Text(TL.clock(timer.activeSecs))
-                        .font(TL.TypeScale.mono(12))
-                        .foregroundStyle(.secondary)
-                }
-            }
-            Spacer(minLength: 0)
-            Button { onResume() } label: {
-                Image(systemName: "play.fill")
-                    .font(.callout)
-                    .foregroundStyle(.white)
-                    .frame(width: 36, height: 36)
-                    .background { Circle().fill(TL.Palette.emerald.gradient) }
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.leading, 0)
-        .padding(.trailing, TL.Space.s)
-        .padding(.vertical, 6)
-        .glassCard(tint: tint, cornerRadius: TL.Radius.m, padding: 0)
-        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-            Button(role: .destructive) { onDelete() } label: {
-                Label("Delete", systemImage: "trash")
-            }
-            Button { onStop() } label: {
-                Label("Stop", systemImage: "stop.fill")
-            }
-            .tint(TL.Palette.ember)
-        }
+    private func timeOfDay(_ ts: Int64) -> String {
+        let df = DateFormatter()
+        df.dateFormat = "h:mm a"
+        return df.string(from: Date(timeIntervalSince1970: TimeInterval(ts)))
     }
 }

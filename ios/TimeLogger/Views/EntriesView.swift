@@ -3,298 +3,225 @@ import SwiftData
 
 enum EntryFilter: String, CaseIterable {
     case today = "Today"
-    case week = "Week"
+    case week  = "Week"
     case month = "Month"
-    case all = "All"
+    case all   = "All"
 }
 
 struct EntriesView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var syncEngine: SyncEngine
 
-    @Query(sort: \TimeEntryLocal.endedAt, order: .reverse) private var allEntries: [TimeEntryLocal]
+    @Query(sort: \TimeEntryLocal.endedAt, order: .reverse)
+    private var allEntries: [TimeEntryLocal]
 
     @State private var filter: EntryFilter = .today
     @State private var selectedEntry: TimeEntryLocal?
-    @State private var selectedDay: Date?
 
-    var filteredEntries: [TimeEntryLocal] {
-        let now = Date()
-        let entries: [TimeEntryLocal]
+    private var filteredEntries: [TimeEntryLocal] {
+        let now = Int64(Date().timeIntervalSince1970)
         switch filter {
-        case .all:
-            entries = allEntries
+        case .all: return allEntries
         case .today:
-            let startOfDay = Calendar.current.startOfDay(for: now)
-            let ts = Int64(startOfDay.timeIntervalSince1970)
-            entries = allEntries.filter { $0.startedAt >= ts }
-        case .week:
-            let weekAgo = Int64(now.timeIntervalSince1970) - 7 * 86400
-            entries = allEntries.filter { $0.startedAt >= weekAgo }
-        case .month:
-            let monthAgo = Int64(now.timeIntervalSince1970) - 30 * 86400
-            entries = allEntries.filter { $0.startedAt >= monthAgo }
+            let d = Int64(Calendar.current.startOfDay(for: Date()).timeIntervalSince1970)
+            return allEntries.filter { $0.startedAt >= d }
+        case .week:  return allEntries.filter { $0.startedAt >= now - 7 * 86400 }
+        case .month: return allEntries.filter { $0.startedAt >= now - 30 * 86400 }
         }
-        guard let selectedDay else { return entries }
-        let cal = Calendar.current
-        return entries.filter { cal.isDate(Date(timeIntervalSince1970: Double($0.startedAt)), inSameDayAs: selectedDay) }
     }
 
-    var totalActiveSecs: Int64 {
-        filteredEntries.reduce(0) { $0 + $1.activeSecs }
+    private var totalSecs: Int64 { filteredEntries.reduce(0) { $0 + $1.activeSecs } }
+
+    private var avgSecs: Int64 {
+        filteredEntries.isEmpty ? 0 : totalSecs / Int64(filteredEntries.count)
     }
 
-    /// [Date: totalSecs] across the last 35 days (5 rows × 7 cols) for the heatmap.
-    var heatmapData: [(Date, Int64)] {
+    /// Groups entries by calendar day, newest first.
+    private var groups: [(date: Date, items: [TimeEntryLocal], totalSecs: Int64)] {
         let cal = Calendar.current
-        let today = cal.startOfDay(for: Date())
-        let days = (0..<35).map { cal.date(byAdding: .day, value: -34 + $0, to: today)! }
-        var buckets: [Date: Int64] = [:]
-        for entry in allEntries {
-            let d = cal.startOfDay(for: Date(timeIntervalSince1970: Double(entry.startedAt)))
-            buckets[d, default: 0] += entry.activeSecs
+        let buckets = Dictionary(grouping: filteredEntries) { entry in
+            cal.startOfDay(for: Date(timeIntervalSince1970: TimeInterval(entry.startedAt)))
         }
-        return days.map { ($0, buckets[$0] ?? 0) }
+        return buckets
+            .map { (date: $0.key, items: $0.value, totalSecs: $0.value.reduce(0) { $0 + $1.activeSecs }) }
+            .sorted { $0.date > $1.date }
     }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: TL.Space.m) {
-                    heatmapCard
-
-                    filterPills
-
-                    totalsRow
-
-                    if filteredEntries.isEmpty {
-                        emptyCard
-                    } else {
-                        entriesList
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                StatusStrip(
+                    title: "Log",
+                    caption: tlStatusCaption(),
+                    right: {
+                        MonoLabel("\(filteredEntries.count) entries", color: TL.Palette.ink)
                     }
+                )
+
+                VStack(alignment: .leading, spacing: 20) {
+                    filterRow.padding(.top, 16)
+                    kpiStrip
+                    groupList
                 }
-                .padding(.horizontal, TL.Space.m)
-                .padding(.top, TL.Space.s)
+                .padding(.horizontal, TL.Space.l)
                 .padding(.bottom, TL.Space.l)
             }
-            .scrollContentBackground(.hidden)
-            .background(Color.clear)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("Log").font(TL.TypeScale.headline)
-                }
-            }
-            .sheet(item: $selectedEntry) { entry in
-                EntryDetailView(entry: entry)
-                    .presentationDetents([.medium, .large])
-                    .presentationBackground(.ultraThinMaterial)
-            }
+        }
+        .background(TL.Palette.bg)
+        .scrollContentBackground(.hidden)
+        .sheet(item: $selectedEntry) { e in
+            EntryDetailView(entry: e)
+                .presentationDetents([.medium, .large])
+                .presentationBackground(TL.Palette.bg)
         }
     }
 
-    // MARK: - Heatmap
+    // MARK: - Filter
 
-    @ViewBuilder
-    private var heatmapCard: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                Text("LAST 5 WEEKS")
-                    .font(TL.TypeScale.caption2)
-                    .foregroundStyle(.secondary)
-                Spacer()
-                if let selectedDay {
-                    Button {
-                        withAnimation(TL.Motion.smooth) { self.selectedDay = nil }
-                    } label: {
-                        Text(selectedDay.formatted(.dateTime.month().day()))
-                            .font(TL.TypeScale.caption2)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 2)
-                            .background {
-                                Capsule().fill(.ultraThinMaterial)
-                            }
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-
-            let maxSecs = max(heatmapData.map(\.1).max() ?? 1, 1)
-            let columns = Array(repeating: GridItem(.flexible(), spacing: 4), count: 7)
-            LazyVGrid(columns: columns, spacing: 4) {
-                ForEach(heatmapData, id: \.0) { day, secs in
-                    dayCell(day: day, secs: secs, maxSecs: maxSecs)
-                        .onTapGesture {
-                            withAnimation(TL.Motion.smooth) {
-                                selectedDay = (selectedDay == day) ? nil : day
-                            }
-                        }
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .glassCard(tint: TL.Palette.iris, cornerRadius: TL.Radius.l, padding: TL.Space.s)
-    }
-
-    @ViewBuilder
-    private func dayCell(day: Date, secs: Int64, maxSecs: Int64) -> some View {
-        let t = maxSecs == 0 ? 0 : Double(secs) / Double(maxSecs)
-        let isSelected = selectedDay == day
-        let isToday = Calendar.current.isDateInToday(day)
-        RoundedRectangle(cornerRadius: 6, style: .continuous)
-            .fill(TL.Palette.emerald.opacity(0.12 + 0.7 * t))
-            .frame(height: 22)
-            .overlay {
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .strokeBorder(isSelected ? .white : (isToday ? TL.Palette.emerald : .clear),
-                                  lineWidth: isSelected ? 1.5 : 1)
-            }
-    }
-
-    // MARK: - Filter pills
-
-    @ViewBuilder
-    private var filterPills: some View {
-        HStack(spacing: 6) {
+    private var filterRow: some View {
+        HStack(spacing: 4) {
             ForEach(EntryFilter.allCases, id: \.self) { f in
-                Button {
-                    withAnimation(TL.Motion.smooth) { filter = f }
-                } label: {
-                    Text(f.rawValue)
-                        .font(TL.TypeScale.caption.weight(.semibold))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .foregroundStyle(filter == f ? .white : .primary.opacity(0.75))
-                        .background {
-                            if filter == f {
-                                Capsule().fill(TL.Palette.sky.gradient)
-                            } else {
-                                Capsule().fill(.ultraThinMaterial)
-                            }
-                        }
+                FilterPill(label: f.rawValue, isSelected: filter == f) {
+                    filter = f
                 }
-                .buttonStyle(.plain)
             }
             Spacer()
         }
     }
 
-    // MARK: - Totals
+    // MARK: - KPI strip
+
+    private var kpiStrip: some View {
+        HStack(spacing: 0) {
+            kpiCell("Total", TL.clockShort(totalSecs))
+            divider
+            kpiCell("Sessions", "\(filteredEntries.count)")
+            divider
+            kpiCell("Avg", filteredEntries.isEmpty ? "—" : TL.clockShort(avgSecs))
+        }
+        .overlay {
+            Rectangle().strokeBorder(TL.Palette.line, lineWidth: 1)
+        }
+        .background(TL.Palette.surface)
+    }
+
+    private func kpiCell(_ label: String, _ value: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            MonoLabel(label)
+            MonoNum(value, size: 20, weight: .semibold, color: TL.Palette.ink)
+        }
+        .padding(.vertical, 14)
+        .padding(.horizontal, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var divider: some View {
+        Rectangle().fill(TL.Palette.line).frame(width: 1)
+    }
+
+    // MARK: - Grouped list
+
+    private var groupList: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            if groups.isEmpty {
+                emptyState
+            } else {
+                ForEach(groups, id: \.date) { g in
+                    dayGroup(g)
+                }
+            }
+        }
+    }
 
     @ViewBuilder
-    private var totalsRow: some View {
-        if !filteredEntries.isEmpty {
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("TOTAL")
-                        .font(TL.TypeScale.caption2)
-                        .foregroundStyle(.secondary)
-                    Text(TL.clock(totalActiveSecs))
-                        .font(TL.TypeScale.mono(22, weight: .semibold))
-                        .foregroundStyle(TL.Palette.citrine)
-                }
+    private func dayGroup(_ g: (date: Date, items: [TimeEntryLocal], totalSecs: Int64)) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .firstTextBaseline) {
+                MonoLabel(dayLabel(g.date), color: TL.Palette.ink)
                 Spacer()
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text("ENTRIES")
-                        .font(TL.TypeScale.caption2)
-                        .foregroundStyle(.secondary)
-                    Text("\(filteredEntries.count)")
-                        .font(TL.TypeScale.mono(22, weight: .semibold))
+                MonoNum(TL.clockShort(g.totalSecs), size: 10, color: TL.Palette.mute)
+            }
+            .padding(.bottom, 6)
+            .overlay(alignment: .bottom) {
+                Rectangle().fill(TL.Palette.line).frame(height: 1)
+            }
+            .padding(.bottom, 10)
+
+            LazyVStack(spacing: 0) {
+                ForEach(g.items, id: \.localId) { e in
+                    entryRow(e)
+                        .contentShape(Rectangle())
+                        .onTapGesture { selectedEntry = e }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button(role: .destructive) {
+                                deleteEntry(e)
+                            } label: { Label("Delete", systemImage: "trash") }
+                        }
                 }
             }
-            .padding(.horizontal, TL.Space.s)
         }
     }
 
-    // MARK: - Entries
-
     @ViewBuilder
-    private var entriesList: some View {
-        VStack(spacing: 8) {
-            ForEach(filteredEntries, id: \.localId) { entry in
-                EntryRow(entry: entry)
-                    .onTapGesture {
-                        selectedEntry = entry
-                    }
+    private func entryRow(_ e: TimeEntryLocal) -> some View {
+        HStack(alignment: .center, spacing: 12) {
+            MonoNum(timeOfDay(e.startedAt), size: 11, color: TL.Palette.dim)
+                .frame(width: 56, alignment: .leading)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(e.name)
+                    .font(.system(size: 14))
+                    .foregroundStyle(TL.Palette.ink)
+                    .lineLimit(1)
+                CategoryTag(name: e.category, compact: true)
             }
+            Spacer()
+            MonoNum(TL.clockShort(e.activeSecs), size: 13, weight: .semibold,
+                    color: TL.categoryColor(e.category))
+        }
+        .padding(.vertical, 10)
+        .overlay(alignment: .bottom) {
+            Rectangle().fill(TL.Palette.line).frame(height: 1)
         }
     }
 
-    @ViewBuilder
-    private var emptyCard: some View {
-        VStack(spacing: 8) {
+    private var emptyState: some View {
+        VStack(spacing: 10) {
             Image(systemName: "clock")
-                .font(.system(size: 32, weight: .light))
-                .foregroundStyle(.white.opacity(0.6))
-            Text("No entries")
-                .font(TL.TypeScale.callout)
-            Text("Completed timers will show up here.")
-                .font(TL.TypeScale.caption)
-                .foregroundStyle(.secondary)
+                .font(.system(size: 26, weight: .light))
+                .foregroundStyle(TL.Palette.dim)
+            Text("No entries yet")
+                .font(.system(size: 14))
+                .foregroundStyle(TL.Palette.mute)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, TL.Space.l)
-        .glassCard(tint: TL.Palette.mist, cornerRadius: TL.Radius.l, padding: TL.Space.s)
+        .padding(.vertical, 40)
+        .surface(padding: 0)
+    }
+
+    // MARK: - Helpers
+
+    private func dayLabel(_ date: Date) -> String {
+        let cal = Calendar.current
+        if cal.isDateInToday(date) { return "Today" }
+        if cal.isDateInYesterday(date) { return "Yesterday" }
+        let df = DateFormatter()
+        df.dateFormat = "EEE MMM d"
+        return df.string(from: date)
+    }
+
+    private func timeOfDay(_ ts: Int64) -> String {
+        let df = DateFormatter()
+        df.dateFormat = "h:mm a"
+        return df.string(from: Date(timeIntervalSince1970: TimeInterval(ts)))
     }
 
     private func deleteEntry(_ entry: TimeEntryLocal) {
-        if let serverId = entry.serverId {
-            modelContext.insert(PendingDeletion(tableName: "time_entries", recordServerId: serverId))
+        if let sid = entry.serverId {
+            modelContext.insert(PendingDeletion(tableName: "time_entries", recordServerId: sid))
         }
         modelContext.delete(entry)
         try? modelContext.save()
         syncEngine.scheduleSyncAfterMutation()
-    }
-}
-
-// MARK: - Entry Row (glass)
-
-struct EntryRow: View {
-    let entry: TimeEntryLocal
-
-    var body: some View {
-        let tint = TL.categoryColor(entry.category)
-        HStack(spacing: 0) {
-            Rectangle()
-                .fill(tint.gradient)
-                .frame(width: 3)
-                .cornerRadius(1.5)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(entry.name)
-                    .font(TL.TypeScale.callout)
-                    .lineLimit(1)
-                HStack(spacing: 6) {
-                    CategoryChip(name: entry.category, compact: true)
-                    Text(dateString(entry.startedAt))
-                        .font(TL.TypeScale.caption2)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding(.leading, TL.Space.s)
-
-            Spacer(minLength: 8)
-
-            Text(TL.clock(entry.activeSecs))
-                .font(TL.TypeScale.mono(14, weight: .semibold))
-                .foregroundStyle(tint)
-                .padding(.trailing, TL.Space.s)
-        }
-        .padding(.vertical, 10)
-        .padding(.trailing, 4)
-        .glassCard(tint: tint, cornerRadius: TL.Radius.m, padding: 0)
-    }
-
-    func dateString(_ ts: Int64) -> String {
-        let date = Date(timeIntervalSince1970: TimeInterval(ts))
-        let formatter = DateFormatter()
-        formatter.dateStyle = .none
-        formatter.timeStyle = .short
-        let cal = Calendar.current
-        if cal.isDateInToday(date) { return "Today · \(formatter.string(from: date))" }
-        if cal.isDateInYesterday(date) { return "Yesterday · \(formatter.string(from: date))" }
-        formatter.dateStyle = .short
-        return formatter.string(from: date)
     }
 }
 
