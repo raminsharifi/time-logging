@@ -1,61 +1,115 @@
 import WidgetKit
 import SwiftUI
 
+// MARK: - Animation cycle
+
+/// Timing for the zoom-in / hold / zoom-out / hold loop that rides on top of
+/// the horizon bar. WidgetKit can't animate at 60fps inside a single entry,
+/// so we pre-generate a dense timeline and let the system transition between
+/// consecutive entries.
+enum HorizonCycle {
+    /// Seconds spent easing the window from 24h down to ±1h.
+    static let zoomInDuration: TimeInterval = 3
+    /// Seconds held at the zoomed-in ±1h window (seconds tick forward here).
+    static let zoomedHoldDuration: TimeInterval = 30
+    /// Seconds spent easing back out to the full 24h window.
+    static let zoomOutDuration: TimeInterval = 3
+    /// Seconds held at the 24h view before the next zoom-in.
+    static let farHoldDuration: TimeInterval = 30
+
+    static var totalDuration: TimeInterval {
+        zoomInDuration + zoomedHoldDuration + zoomOutDuration + farHoldDuration
+    }
+
+    /// Returns progress (0 = far 24h view, 1 = zoomed ±1h view) for the given
+    /// offset into a cycle. Smoothstep eased on the two transitions.
+    static func zoom(at t: TimeInterval) -> Double {
+        let zoomInEnd = zoomInDuration
+        let holdEnd = zoomInEnd + zoomedHoldDuration
+        let zoomOutEnd = holdEnd + zoomOutDuration
+        if t < zoomInEnd {
+            return smoothstep(from: 0, to: zoomInDuration, at: t)
+        }
+        if t < holdEnd {
+            return 1
+        }
+        if t < zoomOutEnd {
+            return 1 - smoothstep(from: 0, to: zoomOutDuration, at: t - holdEnd)
+        }
+        return 0
+    }
+
+    private static func smoothstep(from a: TimeInterval, to b: TimeInterval, at x: TimeInterval) -> Double {
+        guard b > a else { return 0 }
+        let t = max(0, min(1, (x - a) / (b - a)))
+        return t * t * (3 - 2 * t)
+    }
+}
+
 // MARK: - Timeline provider
 
 struct TimerProvider: TimelineProvider {
     func placeholder(in context: Context) -> TimerEntry {
-        TimerEntry(date: .now, snapshot: .preview)
+        TimerEntry(date: .now, snapshot: .preview, zoom: 0)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (TimerEntry) -> Void) {
-        completion(TimerEntry(date: .now, snapshot: TimerSnapshot.load()))
+        completion(TimerEntry(date: .now, snapshot: TimerSnapshot.load(), zoom: 0))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<TimerEntry>) -> Void) {
         let snap = TimerSnapshot.load()
         let now = Date()
-        var entries: [TimerEntry] = []
 
         let cal = Calendar.current
-        let nextMidnight = cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: now)) ?? now.addingTimeInterval(3600)
+        let nextMidnight = cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: now))
+            ?? now.addingTimeInterval(3600)
 
-        if snap.isRunning {
-            for i in 0..<60 {
-                let d = now.addingTimeInterval(Double(i) * 60)
-                if d >= nextMidnight { break }
-                entries.append(TimerEntry(date: d, snapshot: snap))
-            }
-            if entries.isEmpty {
-                entries.append(TimerEntry(date: now, snapshot: snap))
-            }
-        } else {
-            entries.append(TimerEntry(date: now, snapshot: snap))
+        var entries: [TimerEntry] = []
+
+        // Pre-generate one full zoom cycle. Denser sampling during the
+        // transitions where the window is actually moving, sparser during
+        // the two hold phases where only the "now" line advances.
+        var t: TimeInterval = 0
+        while t < HorizonCycle.totalDuration {
+            let d = now.addingTimeInterval(t)
+            if d >= nextMidnight { break }
+            entries.append(TimerEntry(date: d, snapshot: snap, zoom: HorizonCycle.zoom(at: t)))
+            t += isInTransition(t) ? 0.5 : 5
+        }
+        if entries.isEmpty {
+            entries.append(TimerEntry(date: now, snapshot: snap, zoom: 0))
         }
 
-        // Append a post-midnight entry with a manually rolled-over snapshot so
-        // the widget visually rolls over even if iOS delays calling
-        // getTimeline at midnight.
-        if nextMidnight > now {
+        // Post-midnight rollover so the horizon visibly resets even if iOS
+        // delays the reload call.
+        if nextMidnight > now && nextMidnight < now.addingTimeInterval(HorizonCycle.totalDuration) {
             var rolled = snap
             rolled.dayStart = Int64(nextMidnight.timeIntervalSince1970)
             rolled.todayEntries = []
-            rolled.todayTotalSecs = snap.isRunning ? 0 : 0
-            entries.append(TimerEntry(date: nextMidnight, snapshot: rolled))
+            rolled.todayTotalSecs = 0
+            entries.append(TimerEntry(date: nextMidnight, snapshot: rolled, zoom: 0))
         }
 
-        // Try to reload shortly after midnight (to pick up fresh main-app
-        // data) or at the regular pacing interval, whichever comes first.
-        let pacing: TimeInterval = snap.isRunning ? 3600 : 900
-        let nextReload = min(now.addingTimeInterval(pacing),
-                             nextMidnight.addingTimeInterval(60))
+        let cycleEnd = now.addingTimeInterval(HorizonCycle.totalDuration)
+        let nextReload = min(cycleEnd, nextMidnight.addingTimeInterval(60))
         completion(Timeline(entries: entries, policy: .after(nextReload)))
+    }
+
+    private func isInTransition(_ t: TimeInterval) -> Bool {
+        let zoomInEnd = HorizonCycle.zoomInDuration
+        let holdEnd = zoomInEnd + HorizonCycle.zoomedHoldDuration
+        let zoomOutEnd = holdEnd + HorizonCycle.zoomOutDuration
+        return t < zoomInEnd || (t >= holdEnd && t < zoomOutEnd)
     }
 }
 
 struct TimerEntry: TimelineEntry {
     let date: Date
     let snapshot: TimerSnapshot
+    /// 0 = full-day horizon; 1 = ±1h window centred on `date`. Interpolated
+    /// by `HorizonCycle.zoom(at:)` between the two.
+    let zoom: Double
 }
 
 // MARK: - Shared primitives
@@ -80,65 +134,79 @@ struct WLabel: View {
     }
 }
 
-/// A horizontally-laid 24h bar: past entries painted in category hue, the
-/// active session overlaid, and a bright "now" marker.
+/// A horizontally-laid horizon bar with an animated visible window. At
+/// `zoom == 0` the bar covers the full 24h of today; at `zoom == 1` it
+/// covers ±1h around the entry's date. Entries are clipped to the visible
+/// window so the user sees the world zoom in and out over the loop.
 struct WHorizon: View {
     let snapshot: TimerSnapshot
+    let date: Date
     var height: CGFloat = 36
     var showScale: Bool = false
-
-    private let dayLen: Double = 24 * 3600
+    var zoom: Double = 0
 
     var body: some View {
+        let win = Self.window(snapshot: snapshot, date: date, zoom: zoom)
         VStack(spacing: 4) {
             GeometryReader { geo in
                 ZStack(alignment: .topLeading) {
                     Rectangle().fill(WidgetTokens.raised)
 
-                    // Hour gridlines (every 6h)
-                    ForEach([6, 12, 18], id: \.self) { h in
+                    // Adaptive gridlines — density scales with window span.
+                    ForEach(Self.ticks(windowStart: win.start, windowEnd: win.end), id: \.self) { tickTs in
+                        let frac = (tickTs - win.start) / win.length
                         Rectangle()
                             .fill(WidgetTokens.line)
                             .frame(width: 1)
                             .frame(maxHeight: .infinity)
-                            .offset(x: geo.size.width * CGFloat(Double(h) / 24))
+                            .offset(x: geo.size.width * CGFloat(frac))
                     }
 
-                    // Completed entries
+                    // Completed entries — clipped to the visible window.
                     ForEach(Array(snapshot.todayEntries.enumerated()), id: \.offset) { _, e in
-                        let startPct = Double(e.startedAt - snapshot.dayStart) / dayLen
-                        let widthPct = Double(e.endedAt - e.startedAt) / dayLen
-                        Rectangle()
-                            .fill(WidgetPalette.color(for: e.category))
-                            .opacity(0.85)
-                            .frame(width: max(1, geo.size.width * CGFloat(widthPct)),
-                                   height: geo.size.height - 6)
-                            .offset(x: geo.size.width * CGFloat(startPct), y: 3)
+                        let startTs = Double(e.startedAt)
+                        let endTs = Double(e.endedAt)
+                        if endTs > win.start && startTs < win.end {
+                            let clippedStart = max(startTs, win.start)
+                            let clippedEnd = min(endTs, win.end)
+                            let startFrac = (clippedStart - win.start) / win.length
+                            let widthFrac = (clippedEnd - clippedStart) / win.length
+                            Rectangle()
+                                .fill(WidgetPalette.color(for: e.category))
+                                .opacity(0.85)
+                                .frame(width: max(1, geo.size.width * CGFloat(widthFrac)),
+                                       height: geo.size.height - 6)
+                                .offset(x: geo.size.width * CGFloat(startFrac), y: 3)
+                        }
                     }
 
-                    // Active timer. Clamp the start to the current day so a
-                    // timer that crossed midnight renders from x=0 rather
-                    // than spilling off the left edge.
+                    // Active timer, clipped to the window so a midnight-spanning
+                    // timer doesn't spill past the bar edges.
                     if snapshot.isRunning {
-                        let startTs = Int64(snapshot.startedAt.timeIntervalSince1970)
-                        let nowTs = Int64(Date().timeIntervalSince1970)
-                        let effectiveStart = max(startTs, snapshot.dayStart)
-                        let startPct = max(0, Double(effectiveStart - snapshot.dayStart) / dayLen)
-                        let widthPct = max(0, Double(nowTs - effectiveStart) / dayLen)
-                        let color = WidgetPalette.color(for: snapshot.category)
-                        Rectangle()
-                            .fill(color)
-                            .frame(width: max(1, geo.size.width * CGFloat(widthPct)),
-                                   height: geo.size.height - 2)
-                            .offset(x: geo.size.width * CGFloat(startPct), y: 1)
+                        let startTs = snapshot.startedAt.timeIntervalSince1970
+                        let nowTs = date.timeIntervalSince1970
+                        if nowTs > win.start && startTs < win.end {
+                            let clippedStart = max(startTs, win.start)
+                            let clippedEnd = min(nowTs, win.end)
+                            let startFrac = (clippedStart - win.start) / win.length
+                            let widthFrac = (clippedEnd - clippedStart) / win.length
+                            Rectangle()
+                                .fill(WidgetPalette.color(for: snapshot.category))
+                                .frame(width: max(1, geo.size.width * CGFloat(widthFrac)),
+                                       height: geo.size.height - 2)
+                                .offset(x: geo.size.width * CGFloat(startFrac), y: 1)
+                        }
                     }
 
-                    // Now marker
-                    let nowPct = Double(Date().timeIntervalSince1970 - Double(snapshot.dayStart)) / dayLen
-                    Rectangle()
-                        .fill(WidgetTokens.ink)
-                        .frame(width: 2, height: geo.size.height + 2)
-                        .offset(x: max(0, geo.size.width * CGFloat(nowPct) - 1), y: -1)
+                    // Now marker — stays visible whenever the window contains
+                    // the current moment.
+                    let nowFrac = (date.timeIntervalSince1970 - win.start) / win.length
+                    if nowFrac >= 0 && nowFrac <= 1 {
+                        Rectangle()
+                            .fill(WidgetTokens.ink)
+                            .frame(width: 2, height: geo.size.height + 2)
+                            .offset(x: max(0, geo.size.width * CGFloat(nowFrac) - 1), y: -1)
+                    }
                 }
             }
             .frame(height: height)
@@ -147,16 +215,70 @@ struct WHorizon: View {
             }
 
             if showScale {
-                HStack {
-                    ForEach([0, 6, 12, 18, 24], id: \.self) { hr in
-                        Text(String(format: "%02d", hr))
-                            .font(WidgetTokens.mono(8))
-                            .foregroundStyle(WidgetTokens.dim)
-                        if hr != 24 { Spacer() }
-                    }
+                scaleRow(window: win)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func scaleRow(window win: HorizonWindow) -> some View {
+        let ticks = Self.ticks(windowStart: win.start, windowEnd: win.end)
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                ForEach(ticks, id: \.self) { tickTs in
+                    let frac = (tickTs - win.start) / win.length
+                    Text(Self.label(for: tickTs, span: win.length))
+                        .font(WidgetTokens.mono(8))
+                        .foregroundStyle(WidgetTokens.dim)
+                        .fixedSize()
+                        .offset(x: geo.size.width * CGFloat(frac) - 10)
                 }
             }
         }
+        .frame(height: 10)
+    }
+
+    // MARK: Window math
+
+    struct HorizonWindow {
+        let start: Double
+        let end: Double
+        var length: Double { max(end - start, 1) }
+    }
+
+    static func window(snapshot: TimerSnapshot, date: Date, zoom: Double) -> HorizonWindow {
+        let dayLen: Double = 24 * 3600
+        let farStart = Double(snapshot.dayStart)
+        let farEnd = farStart + dayLen
+        let nearStart = date.timeIntervalSince1970 - 3600
+        let nearEnd = date.timeIntervalSince1970 + 3600
+        let clamped = max(0, min(1, zoom))
+        let start = farStart + (nearStart - farStart) * clamped
+        let end = farEnd + (nearEnd - farEnd) * clamped
+        return HorizonWindow(start: start, end: end)
+    }
+
+    static func ticks(windowStart: Double, windowEnd: Double) -> [Double] {
+        let span = max(windowEnd - windowStart, 1)
+        let spacing: Double
+        if span >= 12 * 3600 { spacing = 6 * 3600 }
+        else if span >= 4 * 3600 { spacing = 3600 }
+        else if span >= 1 * 3600 { spacing = 15 * 60 }
+        else { spacing = 5 * 60 }
+        let firstTick = ceil(windowStart / spacing) * spacing
+        var ticks: [Double] = []
+        var t = firstTick
+        while t <= windowEnd + 0.0001 {
+            ticks.append(t)
+            t += spacing
+        }
+        return ticks
+    }
+
+    static func label(for ts: Double, span: Double) -> String {
+        let df = DateFormatter()
+        df.dateFormat = span >= 12 * 3600 ? "HH" : "HH:mm"
+        return df.string(from: Date(timeIntervalSince1970: ts))
     }
 }
 
@@ -259,7 +381,7 @@ private struct SmallActive: View {
 
             Spacer(minLength: 0)
 
-            WHorizon(snapshot: snap, height: 10)
+            WHorizon(snapshot: snap, date: entry.date, height: 10, zoom: entry.zoom)
 
             HStack {
                 WLabel(snap.category.isEmpty ? "—" : snap.category, size: 8)
@@ -297,7 +419,7 @@ private struct MediumHorizon: View {
             }
             .padding(.bottom, 10)
 
-            WHorizon(snapshot: snap, height: 36, showScale: true)
+            WHorizon(snapshot: snap, date: entry.date, height: 36, showScale: true, zoom: entry.zoom)
 
             if snap.isRunning {
                 HStack(spacing: 8) {
@@ -405,7 +527,7 @@ private struct LargeToday: View {
             }
             .padding(.bottom, 14)
 
-            WHorizon(snapshot: snap, height: 44, showScale: true)
+            WHorizon(snapshot: snap, date: entry.date, height: 44, showScale: true, zoom: entry.zoom)
 
             // Stacked 100% category bar
             GeometryReader { geo in
