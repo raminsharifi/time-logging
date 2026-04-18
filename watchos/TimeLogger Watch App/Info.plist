@@ -22,6 +22,8 @@
 	<string>TimeLogger uses Bluetooth to sync with your Mac.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>TimeLogger uses Bluetooth to sync with your Mac.</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>TimeLogger reads your calendar to suggest timers from the event you're in or about to start.</string>
 	<key>WKApplication</key>
 	<true/>
 	<key>WKBackgroundModes</key>

@@ -23,6 +23,7 @@ targets:
           - Info.plist
           - LaunchAgents
       - path: ../ios/TimeLoggerWidgetsiOS/Shared.swift
+      - path: ../ios/TimeLogger/Utilities/CalendarSuggestion.swift
     info:
       path: TimeLogger/Info.plist
       properties:
@@ -30,6 +31,7 @@ targets:
         LSUIElement: false
         NSBluetoothAlwaysUsageDescription: "TimeLogger advertises a BLE peripheral so your iPhone and Apple Watch can sync timers instantly when nearby."
         NSLocalNetworkUsageDescription: "TimeLogger browses your Wi-Fi for other Macs running the tl daemon so the mesh of your Apple devices stays in sync."
+        NSCalendarsFullAccessUsageDescription: "TimeLogger reads your calendar to suggest timers based on the event you're currently in or about to start."
         NSBonjourServices:
           - _tl._tcp
     settings:

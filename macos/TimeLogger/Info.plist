@@ -28,6 +28,8 @@
 	<array>
 		<string>_tl._tcp</string>
 	</array>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>TimeLogger reads your calendar to suggest timers based on the event you're currently in or about to start.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>TimeLogger browses your Wi-Fi for other Macs running the tl daemon so the mesh of your Apple devices stays in sync.</string>
 </dict>

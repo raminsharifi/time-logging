@@ -20,6 +20,7 @@
 		6B55E61B0CB77F5494CF5AF9 /* DeviceIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 147CD9063A9716BEDA3D248C /* DeviceIdentity.swift */; };
 		6DA38B29A09D5FACE3BCD86E /* Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5AD6DF0EF2EFF6A72B1C94 /* Shared.swift */; };
 		7897BA847DFB10DD4F0A88E5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6074FF59633903EE2BBA9307 /* ContentView.swift */; };
+		7B17676F7EE1519F1EB453B8 /* CalendarSuggestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E46639A90ACD63F7F997AE6 /* CalendarSuggestion.swift */; };
 		7CF6895213F257BC17284393 /* WidgetPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11FE62BE2DAE654E3153ECDD /* WidgetPublisher.swift */; };
 		9566C2F1C86C207FCE000DCD /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558517EBCBBC64D67686B562 /* APIClient.swift */; };
 		A1FEA538713E03B2AF2F5564 /* TodosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EEE1CA69C00F363082F0709 /* TodosView.swift */; };
@@ -79,6 +80,7 @@
 		57D2CA0D9ECA2BD50C75EECE /* EntriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntriesView.swift; sourceTree = "<group>"; };
 		6074FF59633903EE2BBA9307 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		783FFE380C8174108AE19AD9 /* DaemonManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaemonManager.swift; sourceTree = "<group>"; };
+		8E46639A90ACD63F7F997AE6 /* CalendarSuggestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarSuggestion.swift; sourceTree = "<group>"; };
 		9DD81AFC31C7CEE0D46A6EAC /* TimeLoggerWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TimeLoggerWidgets.entitlements; sourceTree = "<group>"; };
 		A2484EC889DFCE6D282860EA /* GlassComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassComponents.swift; sourceTree = "<group>"; };
 		B4701E1EAA92ED447DBD03BE /* WidgetBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBridge.swift; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 				74582FB2283D5A25934829DE /* TimeLogger */,
 				C3F8532C1F1202E3220FE307 /* TimeLoggerWidgets */,
 				D724F23261C1EC0CF9C9F319 /* TimeLoggerWidgetsiOS */,
+				E1F38435DD5B1D15A52B3E5B /* Utilities */,
 				B7B6A0E5E4E9CBE7D4A17649 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -205,6 +208,15 @@
 			);
 			name = TimeLoggerWidgetsiOS;
 			path = ../ios/TimeLoggerWidgetsiOS;
+			sourceTree = "<group>";
+		};
+		E1F38435DD5B1D15A52B3E5B /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				8E46639A90ACD63F7F997AE6 /* CalendarSuggestion.swift */,
+			);
+			name = Utilities;
+			path = ../ios/TimeLogger/Utilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -357,6 +369,7 @@
 			files = (
 				9566C2F1C86C207FCE000DCD /* APIClient.swift in Sources */,
 				D237B8B735F9861509D0FDF9 /* AnalyticsView.swift in Sources */,
+				7B17676F7EE1519F1EB453B8 /* CalendarSuggestion.swift in Sources */,
 				7897BA847DFB10DD4F0A88E5 /* ContentView.swift in Sources */,
 				141A5486DE62F7348BB3644A /* DaemonManager.swift in Sources */,
 				31EAD7AA93C786670E0E350F /* DesignSystem.swift in Sources */,

@@ -17,6 +17,8 @@ struct TimerControlSheet: View {
     @State private var suggestedNames: [String] = []
     @State private var suggestedCategories: [String] = []
     @State private var recentTodos: [APITodoResponse] = []
+    @State private var calendarSuggestion: CalendarSuggestion?
+    @State private var calendarAccessRequested = false
     @State private var step: Step = .name
 
     private enum Step {
@@ -31,7 +33,10 @@ struct TimerControlSheet: View {
             case .confirm:  confirmView
             }
         }
-        .task { await loadSuggestions() }
+        .task {
+            await loadSuggestions()
+            calendarSuggestion = CalendarService.nextSuggestion()
+        }
     }
 
     // MARK: - Step 1: Pick name
@@ -43,6 +48,8 @@ struct TimerControlSheet: View {
                 Text("WHAT")
                     .font(TL.TypeScale.caption2)
                     .foregroundStyle(.secondary)
+
+                calendarSuggestionButton
 
                 if !recentTodos.isEmpty {
                     VStack(alignment: .leading, spacing: 4) {
@@ -248,6 +255,72 @@ struct TimerControlSheet: View {
                 .foregroundStyle(.secondary)
             }
             .padding()
+        }
+    }
+
+    // MARK: - Calendar suggestion
+
+    @ViewBuilder
+    private var calendarSuggestionButton: some View {
+        let status = CalendarService.authorization
+        if let s = calendarSuggestion {
+            Button {
+                WKInterfaceDevice.current().play(.click)
+                applyCalendarSuggestion(s)
+                step = .category
+            } label: {
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "calendar")
+                            .font(.system(size: 10))
+                            .foregroundStyle(TL.Palette.iris)
+                        Text(s.relativeLabel)
+                            .font(TL.TypeScale.caption2)
+                            .foregroundStyle(TL.Palette.iris)
+                    }
+                    Text(s.title)
+                        .font(TL.TypeScale.caption)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 5)
+                .padding(.horizontal, 8)
+                .background {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(.ultraThinMaterial)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 8)
+                                .strokeBorder(TL.Palette.iris.opacity(0.4), lineWidth: 1)
+                        }
+                }
+            }
+            .buttonStyle(.plain)
+            .padding(.bottom, 2)
+        } else if status == .notDetermined && !calendarAccessRequested {
+            Button {
+                WKInterfaceDevice.current().play(.click)
+                Task {
+                    calendarAccessRequested = true
+                    _ = await CalendarService.requestAccess()
+                    calendarSuggestion = CalendarService.nextSuggestion()
+                }
+            } label: {
+                Label("Use calendar", systemImage: "calendar")
+                    .font(TL.TypeScale.caption)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 4)
+            }
+            .buttonStyle(.glass(tint: TL.Palette.iris))
+            .padding(.bottom, 2)
+        }
+    }
+
+    private func applyCalendarSuggestion(_ s: CalendarSuggestion) {
+        name = s.title
+        let candidates: [(id: UUID, text: String)] = openTodos.map { ($0.localId, $0.text) }
+        if let matchId = TodoMatcher.bestMatchId(for: s.title, in: candidates) {
+            selectedTodoId = matchId
         }
     }
 

@@ -17,6 +17,8 @@ struct NewTimerSheet: View {
     @State private var suggestedNames: [String] = []
     @State private var suggestedCategories: [String] = []
     @State private var recentTodos: [APITodoResponse] = []
+    @State private var calendarSuggestion: CalendarSuggestion?
+    @State private var calendarAccessRequested = false
 
     private var tint: Color { TL.categoryColor(category.isEmpty ? "General" : category) }
 
@@ -24,6 +26,7 @@ struct NewTimerSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: TL.Space.m) {
+                    calendarPanel
                     namePanel
                     categoryPanel
                     todoPanel
@@ -55,7 +58,99 @@ struct NewTimerSheet: View {
                     Button("Cancel") { dismiss() }
                 }
             }
-            .task { await loadSuggestions() }
+            .task {
+                await loadSuggestions()
+                await refreshCalendar()
+            }
+        }
+    }
+
+    // MARK: - Calendar
+
+    @ViewBuilder
+    private var calendarPanel: some View {
+        let status = CalendarService.authorization
+        if let s = calendarSuggestion {
+            calendarSuggestionRow(s)
+        } else if status == .notDetermined && !calendarAccessRequested {
+            VStack(alignment: .leading, spacing: TL.Space.xs) {
+                Text("FROM CALENDAR")
+                    .font(TL.TypeScale.caption2)
+                    .foregroundStyle(.secondary)
+                Button {
+                    Task {
+                        calendarAccessRequested = true
+                        _ = await CalendarService.requestAccess()
+                        await refreshCalendar()
+                    }
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "calendar")
+                        Text("Use calendar to suggest timers")
+                            .font(TL.TypeScale.body)
+                        Spacer(minLength: 0)
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                    }
+                    .padding(10)
+                }
+                .buttonStyle(.plain)
+                .background {
+                    RoundedRectangle(cornerRadius: 12).fill(.ultraThinMaterial)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .glassCard(tint: TL.Palette.iris, cornerRadius: TL.Radius.l, padding: TL.Space.m)
+        }
+    }
+
+    @ViewBuilder
+    private func calendarSuggestionRow(_ s: CalendarSuggestion) -> some View {
+        Button {
+            applyCalendarSuggestion(s)
+        } label: {
+            VStack(alignment: .leading, spacing: TL.Space.xs) {
+                HStack(spacing: 6) {
+                    Image(systemName: "calendar")
+                        .foregroundStyle(TL.Palette.iris)
+                    Text("FROM CALENDAR · \(s.relativeLabel)")
+                        .font(TL.TypeScale.caption2)
+                        .foregroundStyle(.secondary)
+                    Spacer(minLength: 0)
+                    Text("Use")
+                        .font(TL.TypeScale.caption.weight(.semibold))
+                        .foregroundStyle(TL.Palette.iris)
+                }
+                Text(s.title)
+                    .font(TL.TypeScale.body.weight(.medium))
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                if !s.calendarTitle.isEmpty {
+                    Text(s.calendarTitle)
+                        .font(TL.TypeScale.caption)
+                        .foregroundStyle(.tertiary)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .buttonStyle(.plain)
+        .glassCard(tint: TL.Palette.iris, cornerRadius: TL.Radius.l, padding: TL.Space.m)
+    }
+
+    private func refreshCalendar() async {
+        calendarSuggestion = CalendarService.nextSuggestion()
+    }
+
+    private func applyCalendarSuggestion(_ s: CalendarSuggestion) {
+        name = s.title
+        let candidates: [(id: Int, text: String)] = openTodos.compactMap {
+            guard let id = $0.serverId else { return nil }
+            return (id, $0.text)
+        }
+        if let matchId = TodoMatcher.bestMatchId(for: s.title, in: candidates) {
+            selectedTodoId = matchId
         }
     }
 

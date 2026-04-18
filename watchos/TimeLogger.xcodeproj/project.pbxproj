@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0080D509200E23C6EC7F96DA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614AF19032AC9974CFFDEBBC /* SettingsView.swift */; };
 		08F1E9E3592AF1CC1DC4A94E /* ActiveTimerLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84BA3E618859A6B5817684F /* ActiveTimerLocal.swift */; };
+		1949857A3FE9F85252709B46 /* CalendarSuggestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97CC995546CCC4DAABFA9F87 /* CalendarSuggestion.swift */; };
 		196E49050AFBBECC8B6E3FD5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1014B9E9A4BD749F5284DA96 /* Assets.xcassets */; };
 		28DE77949BE70BE427093F1F /* SyncEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA0825543598F9B57626D60 /* SyncEngine.swift */; };
 		2CAEFC55612CCCFB8061AEF5 /* TimeLoggerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D623DFA19B64E4A7B9996C1A /* TimeLoggerWidget.swift */; };
@@ -80,6 +81,7 @@
 		8521CCF1630064596B96DF58 /* TimeLogger Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "TimeLogger Watch App.entitlements"; sourceTree = "<group>"; };
 		90BECF6F4E3EF6D14200BC25 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		92C49FF4AB95A3719C0139DD /* TimerControlSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerControlSheet.swift; sourceTree = "<group>"; };
+		97CC995546CCC4DAABFA9F87 /* CalendarSuggestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarSuggestion.swift; sourceTree = "<group>"; };
 		AC60377079687DE0615A8FB3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B84BA3E618859A6B5817684F /* ActiveTimerLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveTimerLocal.swift; sourceTree = "<group>"; };
 		B9DDC206158AB0B5CD2E67A4 /* TimeEntryLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeEntryLocal.swift; sourceTree = "<group>"; };
@@ -118,6 +120,7 @@
 			children = (
 				D4FC67118DF98E5D0BC034B2 /* TimeLogger Watch App */,
 				BBB93ECCAB3C35DD5F306AFA /* TimeLoggerWidget */,
+				B03FF49738D1EAFA39D5993C /* Utilities */,
 				4E3DE302C0F26E4F5EF9C7A4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -131,6 +134,15 @@
 				1AA0825543598F9B57626D60 /* SyncEngine.swift */,
 			);
 			path = Networking;
+			sourceTree = "<group>";
+		};
+		B03FF49738D1EAFA39D5993C /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				97CC995546CCC4DAABFA9F87 /* CalendarSuggestion.swift */,
+			);
+			name = Utilities;
+			path = ../ios/TimeLogger/Utilities;
 			sourceTree = "<group>";
 		};
 		B9514FD47AE3001BC1B678B1 /* Utilities */ = {
@@ -289,6 +301,7 @@
 				A99765AFC9D208B5446C79B6 /* BLEManager.swift in Sources */,
 				D85B11FA554748A824F0DE99 /* BreakPeriod.swift in Sources */,
 				EA941F8FB006953EE31C7C13 /* BreaksView.swift in Sources */,
+				1949857A3FE9F85252709B46 /* CalendarSuggestion.swift in Sources */,
 				A2E71FB9D3D88C67139080F3 /* ContentView.swift in Sources */,
 				FA90375DCCBFFA304C2AFB62 /* DesignSystem.swift in Sources */,
 				3B6DBEB97C3A4B13A4A22140 /* DeviceIdentity.swift in Sources */,

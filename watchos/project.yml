@@ -21,6 +21,7 @@ targets:
       - path: TimeLogger Watch App
         excludes:
           - Info.plist
+      - path: ../ios/TimeLogger/Utilities/CalendarSuggestion.swift
     info:
       path: TimeLogger Watch App/Info.plist
       properties:
@@ -28,6 +29,7 @@ targets:
         WKWatchOnly: true
         NSBluetoothAlwaysUsageDescription: "TimeLogger uses Bluetooth to sync with your Mac."
         NSBluetoothPeripheralUsageDescription: "TimeLogger uses Bluetooth to sync with your Mac."
+        NSCalendarsFullAccessUsageDescription: "TimeLogger reads your calendar to suggest timers from the event you're in or about to start."
         WKBackgroundModes:
           - bluetooth-central
     settings:
