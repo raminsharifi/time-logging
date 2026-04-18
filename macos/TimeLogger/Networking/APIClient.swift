@@ -4,11 +4,14 @@ import Foundation
 final class APIClient: ObservableObject {
     @Published var isConnected = false
     @Published var timers: [TimerResponse] = []
+    @Published private(set) var todos: [TodoResponse] = []
+    @Published private(set) var todayEntries: [EntryResponse] = []
     @Published private(set) var baseURL: String
 
     private let identity: DeviceIdentity
     private let session: URLSession
     private var pollingTask: Task<Void, Never>?
+    private var pokeContinuation: CheckedContinuation<Void, Never>?
 
     init(port: Int = 9746) {
         self.identity = .shared
@@ -26,18 +29,22 @@ final class APIClient: ObservableObject {
         baseURL = newBase
         isConnected = false
         timers = []
-        Task { await refreshTimers() }
+        todos = []
+        todayEntries = []
+        Task { await pokeNow() }
     }
 
     /// Start a single shared polling loop. Call once from the app entry point.
+    /// Refreshes timers, todos and today's entries together so every view
+    /// that reads `api.*` stays in sync without having to fetch on its own.
     func startPolling(interval: TimeInterval = 1) {
         guard pollingTask == nil else { return }
         pollingTask = Task { [weak self] in
             while !Task.isCancelled {
                 guard let self else { return }
-                let new = (try? await self.getStatus()) ?? []
-                if new != self.timers { self.timers = new }
-                try? await Task.sleep(for: .seconds(interval))
+                await self.tick()
+                // Either sleep for the interval or race a pokeNow() wake-up.
+                await self.sleepUntilTickOrPoke(seconds: interval)
             }
         }
     }
@@ -45,12 +52,49 @@ final class APIClient: ObservableObject {
     func stopPolling() {
         pollingTask?.cancel()
         pollingTask = nil
+        pokeContinuation?.resume()
+        pokeContinuation = nil
     }
 
-    /// Force an immediate refresh (e.g. after start/stop/pause actions).
-    func refreshTimers() async {
-        let new = (try? await getStatus()) ?? []
-        if new != timers { timers = new }
+    /// Force an immediate refresh of everything the UI binds to. Use after a
+    /// local mutation so the sheet you just dismissed sees the new state
+    /// without waiting up to 1s for the next poll tick.
+    func pokeNow() async {
+        // Wake the polling loop if it's sleeping; otherwise just run a tick.
+        if let cont = pokeContinuation {
+            pokeContinuation = nil
+            cont.resume()
+        } else {
+            await tick()
+        }
+    }
+
+    /// Back-compat alias — some call sites pre-dated `pokeNow()`.
+    func refreshTimers() async { await pokeNow() }
+
+    private func tick() async {
+        async let newTimers = (try? await getStatus()) ?? []
+        async let newTodos = (try? await getTodos()) ?? []
+        async let newEntries = (try? await getEntries(today: true)) ?? []
+        let (t, td, e) = await (newTimers, newTodos, newEntries)
+        if t != timers { timers = t }
+        if td != todos { todos = td }
+        if e != todayEntries { todayEntries = e }
+    }
+
+    private func sleepUntilTickOrPoke(seconds: TimeInterval) async {
+        let sleeper = Task { try? await Task.sleep(for: .seconds(seconds)) }
+        await withCheckedContinuation { (cont: CheckedContinuation<Void, Never>) in
+            pokeContinuation = cont
+            Task {
+                await sleeper.value
+                if let c = self.pokeContinuation {
+                    self.pokeContinuation = nil
+                    c.resume()
+                }
+            }
+        }
+        sleeper.cancel()
     }
 
     // MARK: - Health

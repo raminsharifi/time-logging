@@ -24,7 +24,7 @@ struct BreakPeriodDTO: Codable, Equatable {
     let end_ts: Int64
 }
 
-struct EntryResponse: Codable, Identifiable {
+struct EntryResponse: Codable, Identifiable, Hashable {
     let id: Int
     let name: String
     let category: String
@@ -36,7 +36,7 @@ struct EntryResponse: Codable, Identifiable {
     let last_modified: Int64
 }
 
-struct TodoResponse: Codable, Identifiable {
+struct TodoResponse: Codable, Identifiable, Equatable {
     let id: Int
     let text: String
     let done: Bool

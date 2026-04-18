@@ -8,10 +8,17 @@ enum EntryFilter: String, CaseIterable {
 
 struct EntriesView: View {
     @EnvironmentObject var api: APIClient
-    @State private var entries: [EntryResponse] = []
+    @State private var wideRangeEntries: [EntryResponse] = []
     @State private var filter: EntryFilter = .today
     @State private var selectedEntryId: Int?
     @State private var editingEntry: EntryResponse?
+    @State private var errorBanner: String?
+
+    /// Today → live stream from APIClient. Week/All → an explicit one-off fetch
+    /// that populates `wideRangeEntries`.
+    var entries: [EntryResponse] {
+        filter == .today ? api.todayEntries : wideRangeEntries
+    }
 
     var selectedEntry: EntryResponse? {
         guard let id = selectedEntryId else { return nil }
@@ -37,6 +44,12 @@ struct EntriesView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: TL.Space.m) {
+            if let err = errorBanner {
+                MutationBanner(message: err) { errorBanner = nil }
+                    .padding(.horizontal, TL.Space.m)
+                    .padding(.top, TL.Space.m)
+            }
+
             HStack(spacing: TL.Space.s) {
                 filterPicker
                 Spacer()
@@ -45,7 +58,7 @@ struct EntriesView: View {
                     .foregroundStyle(TL.Palette.iris)
             }
             .padding(.horizontal, TL.Space.m)
-            .padding(.top, TL.Space.m)
+            .padding(.top, errorBanner == nil ? TL.Space.m : 0)
 
             heatmapCard
                 .padding(.horizontal, TL.Space.m)
@@ -53,7 +66,7 @@ struct EntriesView: View {
             entryTable
         }
         .sheet(item: $editingEntry) { e in
-            EntryDetailSheet(entry: e) { await loadEntries() }
+            EntryDetailSheet(entry: e) { await api.pokeNow(); await loadEntries() }
         }
         .onChange(of: filter) { _, _ in Task { await loadEntries() } }
         .task { await loadEntries() }
@@ -150,21 +163,29 @@ struct EntriesView: View {
                 Button("Edit...") { editingEntry = entry }
                 Divider()
                 Button("Delete", role: .destructive) {
-                    Task { try? await api.deleteEntry(id: entry.id); await loadEntries() }
+                    Task {
+                        do {
+                            try await api.deleteEntry(id: entry.id)
+                            await api.pokeNow()
+                            await loadEntries()
+                        } catch {
+                            errorBanner = "Couldn't delete entry: \(error.localizedDescription)"
+                        }
+                    }
                 }
             }
         }
     }
 
+    /// Only fetches for non-today ranges — the today view is driven by the
+    /// always-polling `api.todayEntries` stream.
     private func loadEntries() async {
-        entries = (try? await api.getEntries(
-            today: filter == .today,
+        guard filter != .today else { return }
+        wideRangeEntries = (try? await api.getEntries(
+            today: false,
             week: filter == .week
         )) ?? []
     }
 }
 
-extension EntryResponse: Hashable {
-    static func == (lhs: EntryResponse, rhs: EntryResponse) -> Bool { lhs.id == rhs.id }
-    func hash(into hasher: inout Hasher) { hasher.combine(id) }
-}
+

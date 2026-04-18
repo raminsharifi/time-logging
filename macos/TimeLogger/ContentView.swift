@@ -21,6 +21,11 @@ struct ContentView: View {
         }
         .task { api.startPolling() }
         .preferredColorScheme(.dark)
+        .onReceive(NotificationCenter.default.publisher(for: .tlNavigateTo)) { note in
+            guard let raw = note.userInfo?[NotificationKey.sidebarItem] as? String,
+                  let item = SidebarItem(rawValue: raw) else { return }
+            selection = item
+        }
     }
 }
 

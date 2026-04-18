@@ -9,6 +9,7 @@ struct TodosView: View {
     private var todos: [TodoItemLocal]
 
     @State private var newText = ""
+    @State private var errorBanner: String?
     @FocusState private var newFocused: Bool
 
     private var active: [TodoItemLocal] { todos.filter { !$0.done } }
@@ -24,7 +25,10 @@ struct TodosView: View {
                 )
 
                 VStack(alignment: .leading, spacing: 20) {
-                    addBar.padding(.top, 16)
+                    if let err = errorBanner {
+                        errorRow(err).padding(.top, 12)
+                    }
+                    addBar.padding(.top, errorBanner == nil ? 16 : 8)
 
                     section(title: "Active · \(active.count)") {
                         if active.isEmpty {
@@ -171,15 +175,19 @@ struct TodosView: View {
         guard !trimmed.isEmpty else { return }
         let t = TodoItemLocal(text: trimmed)
         modelContext.insert(t)
-        try? modelContext.save()
+        guard persist("add todo") else { return }
         newText = ""
         syncEngine.scheduleSyncAfterMutation()
     }
 
     private func toggle(_ t: TodoItemLocal) {
+        let previous = t.done
         t.done.toggle()
         t.lastModified = Int64(Date().timeIntervalSince1970)
-        try? modelContext.save()
+        guard persist("update todo") else {
+            t.done = previous
+            return
+        }
         syncEngine.scheduleSyncAfterMutation()
     }
 
@@ -188,7 +196,7 @@ struct TodosView: View {
             modelContext.insert(PendingDeletion(tableName: "todos", recordServerId: sid))
         }
         modelContext.delete(t)
-        try? modelContext.save()
+        guard persist("delete todo") else { return }
         syncEngine.scheduleSyncAfterMutation()
     }
 
@@ -200,7 +208,47 @@ struct TodosView: View {
         running?.pause()
         let timer = ActiveTimerLocal(name: t.text, category: "General", todoId: t.serverId)
         modelContext.insert(timer)
-        try? modelContext.save()
+        guard persist("start timer") else { return }
         syncEngine.scheduleSyncAfterMutation()
+    }
+
+    /// Save the current modelContext, surfacing failures inline instead of
+    /// dropping them. Returns `true` on success.
+    @discardableResult
+    private func persist(_ action: String) -> Bool {
+        do {
+            try modelContext.save()
+            errorBanner = nil
+            return true
+        } catch {
+            errorBanner = "Couldn't \(action): \(error.localizedDescription)"
+            return false
+        }
+    }
+
+    @ViewBuilder
+    private func errorRow(_ message: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(TL.Palette.ember)
+            Text(message)
+                .font(TL.TypeScale.caption)
+                .foregroundStyle(TL.Palette.ink)
+                .lineLimit(2)
+            Spacer(minLength: 0)
+            Button { errorBanner = nil } label: {
+                Image(systemName: "xmark").font(.caption2)
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(TL.Palette.mute)
+        }
+        .padding(10)
+        .background {
+            RoundedRectangle(cornerRadius: TL.Radius.m).fill(TL.Palette.surface)
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: TL.Radius.m)
+                .strokeBorder(TL.Palette.ember.opacity(0.4), lineWidth: 1)
+        }
     }
 }

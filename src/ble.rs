@@ -3,6 +3,7 @@ use std::os::raw::c_char;
 
 unsafe extern "C" {
     fn ble_peripheral_start(http_port: u16);
+    #[allow(dead_code)]
     fn ble_peripheral_stop();
     fn ble_get_connected_devices() -> *const c_char;
     fn ble_free_string(ptr: *const c_char);
@@ -14,6 +15,7 @@ pub fn start(port: u16) {
     unsafe { ble_peripheral_start(port); }
 }
 
+#[allow(dead_code)]
 pub fn stop() {
     unsafe { ble_peripheral_stop(); }
 }

@@ -24,6 +24,7 @@
 		7CF6895213F257BC17284393 /* WidgetPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11FE62BE2DAE654E3153ECDD /* WidgetPublisher.swift */; };
 		9566C2F1C86C207FCE000DCD /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558517EBCBBC64D67686B562 /* APIClient.swift */; };
 		A1FEA538713E03B2AF2F5564 /* TodosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EEE1CA69C00F363082F0709 /* TodosView.swift */; };
+		A4DD3951EEACF9F4AE033142 /* AppNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB02033EF209BC32FD7F5F0B /* AppNotifications.swift */; };
 		A907B92F6C53D2EF856B691F /* WidgetBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4701E1EAA92ED447DBD03BE /* WidgetBridge.swift */; };
 		A9E13817E85C9334F101EEA6 /* DevicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC211A76E6F440B520DB7E5B /* DevicesView.swift */; };
 		BF8EFE410124EDF3A296CB4C /* ServerSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B28A6F84A3577DBF2FD2DD9 /* ServerSelection.swift */; };
@@ -92,6 +93,7 @@
 		DF77EA3DE2ECBD4AF1571DD5 /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsView.swift; sourceTree = "<group>"; };
 		E345615D3169C03BC096C7A9 /* PomodoroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroView.swift; sourceTree = "<group>"; };
 		E9544A21B8D11CDB465DAE32 /* TimerWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerWidget.swift; sourceTree = "<group>"; };
+		EB02033EF209BC32FD7F5F0B /* AppNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNotifications.swift; sourceTree = "<group>"; };
 		EB1646EFB4037198D4983939 /* MenuBarLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarLabel.swift; sourceTree = "<group>"; };
 		ED8BF16D71DBCCC9B3CA8323 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F2BCD2A75C8923E2006D74E8 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
@@ -162,6 +164,7 @@
 		A2A44621E9A0FA621771EB9F /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				EB02033EF209BC32FD7F5F0B /* AppNotifications.swift */,
 				07CDAAED8743BDC34B903A53 /* DesignSystem.swift */,
 				A2484EC889DFCE6D282860EA /* GlassComponents.swift */,
 				F2BCD2A75C8923E2006D74E8 /* HotkeyManager.swift */,
@@ -369,6 +372,7 @@
 			files = (
 				9566C2F1C86C207FCE000DCD /* APIClient.swift in Sources */,
 				D237B8B735F9861509D0FDF9 /* AnalyticsView.swift in Sources */,
+				A4DD3951EEACF9F4AE033142 /* AppNotifications.swift in Sources */,
 				7B17676F7EE1519F1EB453B8 /* CalendarSuggestion.swift in Sources */,
 				7897BA847DFB10DD4F0A88E5 /* ContentView.swift in Sources */,
 				141A5486DE62F7348BB3644A /* DaemonManager.swift in Sources */,

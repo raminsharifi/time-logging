@@ -1,12 +1,5 @@
 import SwiftUI
 
-extension Notification.Name {
-    static let tlNewTimer = Notification.Name("tl.newTimer")
-    static let tlToggleTimer = Notification.Name("tl.toggleTimer")
-    static let tlPauseResume = Notification.Name("tl.pauseResume")
-    static let tlStopTimer = Notification.Name("tl.stopTimer")
-}
-
 @main
 struct TimeLoggerApp: App {
     @StateObject private var identity = DeviceIdentity.shared
@@ -76,6 +69,18 @@ struct TimeLoggerApp: App {
                 }
                 .keyboardShortcut(".", modifiers: [.command])
             }
+            CommandMenu("View") {
+                ForEach(Array(SidebarItem.allCases.enumerated()), id: \.offset) { idx, item in
+                    Button(item.rawValue) {
+                        NotificationCenter.default.post(
+                            name: .tlNavigateTo,
+                            object: nil,
+                            userInfo: [NotificationKey.sidebarItem: item.rawValue]
+                        )
+                    }
+                    .keyboardShortcut(KeyEquivalent(Character("\(idx + 1)")), modifiers: [.command])
+                }
+            }
         }
         .windowStyle(.titleBar)
         .windowResizability(.contentMinSize)
@@ -108,7 +113,7 @@ struct TimeLoggerApp: App {
             } else {
                 _ = try? await api.startTimer(name: "Focus", category: "General", todoId: nil)
             }
-            await api.refreshTimers()
+            await api.pokeNow()
         }
     }
 
@@ -120,7 +125,7 @@ struct TimeLoggerApp: App {
             } else if let paused = api.timers.first(where: { $0.isPaused }) {
                 _ = try? await api.resumeTimer(id: paused.id)
             }
-            await api.refreshTimers()
+            await api.pokeNow()
         }
     }
 
@@ -129,7 +134,7 @@ struct TimeLoggerApp: App {
         Task {
             if let running = api.timers.first(where: { $0.isRunning }) {
                 _ = try? await api.stopTimer(id: running.id)
-                await api.refreshTimers()
+                await api.pokeNow()
             }
         }
     }

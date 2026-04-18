@@ -9,6 +9,7 @@ struct TodoListView: View {
     @Query(sort: \TodoItemLocal.lastModified, order: .reverse) private var todos: [TodoItemLocal]
     @State private var newTodoText = ""
     @State private var showAddSheet = false
+    @State private var errorBanner: String?
 
     private var open: [TodoItemLocal] { todos.filter { !$0.done } }
     private var done: [TodoItemLocal] { todos.filter { $0.done } }
@@ -17,6 +18,10 @@ struct TodoListView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: TL.Space.s) {
                 header
+
+                if let err = errorBanner {
+                    errorRow(err)
+                }
 
                 if todos.isEmpty {
                     emptyState
@@ -148,10 +153,14 @@ struct TodoListView: View {
     // MARK: - Actions
 
     private func toggleDone(_ todo: TodoItemLocal) {
+        let previous = todo.done
         todo.done.toggle()
         todo.lastModified = .now
         todo.needsSync = true
-        try? modelContext.save()
+        guard persist("update todo") else {
+            todo.done = previous
+            return
+        }
         syncEngine.scheduleSyncAfterMutation()
     }
 
@@ -160,7 +169,7 @@ struct TodoListView: View {
             modelContext.insert(PendingDeletion(tableName: "todos", recordServerId: serverId))
         }
         modelContext.delete(todo)
-        try? modelContext.save()
+        guard persist("delete todo") else { return }
         syncEngine.scheduleSyncAfterMutation()
     }
 
@@ -169,10 +178,44 @@ struct TodoListView: View {
         guard !trimmed.isEmpty else { return }
         let todo = TodoItemLocal(text: trimmed)
         modelContext.insert(todo)
-        try? modelContext.save()
+        guard persist("add todo") else { return }
         newTodoText = ""
         showAddSheet = false
         syncEngine.scheduleSyncAfterMutation()
+    }
+
+    @discardableResult
+    private func persist(_ action: String) -> Bool {
+        do {
+            try modelContext.save()
+            errorBanner = nil
+            return true
+        } catch {
+            errorBanner = "Couldn't \(action): \(error.localizedDescription)"
+            return false
+        }
+    }
+
+    @ViewBuilder
+    private func errorRow(_ message: String) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 10))
+                .foregroundStyle(TL.Palette.ember)
+            Text(message)
+                .font(TL.TypeScale.caption2)
+                .lineLimit(3)
+            Spacer(minLength: 0)
+        }
+        .padding(8)
+        .background {
+            RoundedRectangle(cornerRadius: 8).fill(.ultraThinMaterial)
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 8)
+                .strokeBorder(TL.Palette.ember.opacity(0.4), lineWidth: 1)
+        }
+        .onTapGesture { errorBanner = nil }
     }
 
     private func startTimerLinked(to todo: TodoItemLocal) {
