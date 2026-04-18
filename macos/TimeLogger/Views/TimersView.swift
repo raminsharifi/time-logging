@@ -87,7 +87,50 @@ struct TimersView: View {
                 }
             }
             horizonBar(height: 72, showScale: true)
+            if running == nil && !paused.isEmpty {
+                pausedRow
+            }
         }
+    }
+
+    private var pausedRow: some View {
+        HStack(spacing: 8) {
+            MonoLabel("PAUSED", size: 9, color: TL.Palette.dim)
+            ForEach(paused) { p in
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(TL.categoryColor(p.category))
+                        .frame(width: 6, height: 6)
+                    Text(p.name)
+                        .font(TL.TypeScale.caption)
+                        .lineLimit(1)
+                    Text(TL.clockShort(p.active_secs))
+                        .font(TL.TypeScale.mono(10, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                    Button {
+                        Task { _ = try? await api.resumeTimer(id: p.id); await api.refreshTimers() }
+                    } label: {
+                        Image(systemName: "play.fill").font(.caption2)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .tint(TL.Palette.emerald)
+                    Button(role: .destructive) {
+                        Task { _ = try? await api.stopTimer(id: p.id); await api.refreshTimers() }
+                    } label: {
+                        Image(systemName: "stop.fill").font(.caption2)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .tint(TL.Palette.ember)
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(.ultraThinMaterial, in: Capsule())
+            }
+            Spacer()
+        }
+        .padding(.top, 4)
     }
 
     private var newTimerButton: some View {
@@ -123,7 +166,7 @@ struct TimersView: View {
     @ViewBuilder
     private func livePill(for r: TimerResponse) -> some View {
         let tint = TL.categoryColor(r.category)
-        VStack(alignment: .trailing, spacing: 6) {
+        VStack(alignment: .trailing, spacing: 8) {
             HStack(spacing: 6) {
                 PulsingDot(color: tint, size: 4)
                 MonoLabel("LIVE · \(r.category.uppercased())", color: tint)
@@ -139,6 +182,25 @@ struct TimersView: View {
             Text("\(r.name) · started \(timeOfDay(r.started_at))")
                 .font(.system(size: 12))
                 .foregroundStyle(TL.Palette.mute)
+
+            HStack(spacing: 6) {
+                Button {
+                    Task { _ = try? await api.pauseTimer(id: r.id); await api.refreshTimers() }
+                } label: {
+                    Label("Pause", systemImage: "pause.fill")
+                }
+                .keyboardShortcut("p", modifiers: [.command, .shift])
+                .buttonStyle(.bordered)
+
+                Button(role: .destructive) {
+                    Task { _ = try? await api.stopTimer(id: r.id); await api.refreshTimers() }
+                } label: {
+                    Label("Stop", systemImage: "stop.fill")
+                }
+                .keyboardShortcut(".", modifiers: [.command])
+                .buttonStyle(.borderedProminent)
+                .tint(TL.Palette.ember)
+            }
         }
     }
 
