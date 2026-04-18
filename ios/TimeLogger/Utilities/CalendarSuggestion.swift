@@ -64,6 +64,32 @@ enum CalendarService {
             calendarTitle: event.calendar?.title ?? ""
         )
     }
+
+    /// Write a completed session into the user's default calendar. Returns
+    /// true on success. Caller must have previously obtained full access via
+    /// `requestAccess()` (e.g. in the New Timer sheet).
+    @discardableResult
+    static func addEvent(
+        title: String,
+        notes: String? = nil,
+        start: Date,
+        end: Date
+    ) -> Bool {
+        guard authorization == .fullAccess else { return false }
+        guard let cal = store.defaultCalendarForNewEvents else { return false }
+        let event = EKEvent(eventStore: store)
+        event.title = title
+        event.notes = notes
+        event.startDate = start
+        event.endDate = end
+        event.calendar = cal
+        do {
+            try store.save(event, span: .thisEvent)
+            return true
+        } catch {
+            return false
+        }
+    }
 }
 
 // MARK: - Todo matching

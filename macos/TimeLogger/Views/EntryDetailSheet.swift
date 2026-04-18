@@ -11,6 +11,7 @@ struct EntryDetailSheet: View {
     @State private var category: String = ""
     @State private var addMinutes: String = ""
     @State private var subMinutes: String = ""
+    @State private var calendarAdded = false
 
     var body: some View {
         let tint = TL.categoryColor(category.isEmpty ? entry.category : category)
@@ -94,6 +95,13 @@ struct EntryDetailSheet: View {
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }
+                Button {
+                    addToCalendar()
+                } label: {
+                    Label(calendarAdded ? "Added" : "Add to Calendar",
+                          systemImage: calendarAdded ? "checkmark.circle.fill" : "calendar.badge.plus")
+                }
+                .disabled(calendarAdded)
                 Spacer()
                 Button("Cancel") { dismiss() }
                     .keyboardShortcut(.cancelAction)
@@ -159,6 +167,25 @@ struct EntryDetailSheet: View {
             _ = try? await api.editEntry(id: entry.id, request: EditEntryRequest(name: nil, category: nil, add_mins: nil, sub_mins: mins))
             subMinutes = ""
             await onDone()
+        }
+    }
+
+    private func addToCalendar() {
+        Task {
+            if CalendarService.authorization != .fullAccess {
+                _ = await CalendarService.requestAccess()
+            }
+            let start = Date(timeIntervalSince1970: TimeInterval(entry.started_at))
+            let end = Date(timeIntervalSince1970: TimeInterval(entry.ended_at))
+            let title = name.isEmpty ? entry.name : name
+            let cat = category.isEmpty ? entry.category : category
+            let ok = CalendarService.addEvent(
+                title: title,
+                notes: "TimeLogger · \(cat) · \(formatDuration(entry.active_secs))",
+                start: start,
+                end: end
+            )
+            calendarAdded = ok
         }
     }
 }

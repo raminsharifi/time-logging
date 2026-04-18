@@ -53,6 +53,9 @@ struct TimersView: View {
         .onReceive(refreshTimer) { _ in
             Task { await reload() }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .tlNewTimer)) { _ in
+            showNewTimer = true
+        }
         .sheet(isPresented: $showNewTimer) {
             NewTimerSheet { await api.refreshTimers() }
         }
@@ -77,10 +80,27 @@ struct TimersView: View {
                     heroCounter
                 }
                 Spacer()
-                if let r = running { livePill(for: r) }
+                if let r = running {
+                    livePill(for: r)
+                } else {
+                    newTimerButton
+                }
             }
             horizonBar(height: 72, showScale: true)
         }
+    }
+
+    private var newTimerButton: some View {
+        Button {
+            showNewTimer = true
+        } label: {
+            Label("New Timer", systemImage: "plus.circle.fill")
+                .font(TL.TypeScale.body.weight(.semibold))
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(TL.Palette.emerald)
+        .controlSize(.large)
+        .keyboardShortcut("n", modifiers: [.command])
     }
 
     private var heroCounter: some View {

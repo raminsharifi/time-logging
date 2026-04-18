@@ -11,6 +11,7 @@ struct EntryDetailView: View {
     @State private var editName: String = ""
     @State private var editCategory: String = ""
     @State private var adjustMinutes: String = ""
+    @State private var calendarAdded = false
 
     private var tint: Color { TL.categoryColor(entry.category) }
 
@@ -22,6 +23,7 @@ struct EntryDetailView: View {
                     editPanel
                     breaksPanel
                     adjustPanel
+                    addCalendarButton
                     deleteButton
                 }
                 .padding(.horizontal, TL.Space.m)
@@ -209,6 +211,19 @@ struct EntryDetailView: View {
     }
 
     @ViewBuilder
+    private var addCalendarButton: some View {
+        Button {
+            addToCalendar()
+        } label: {
+            Label(calendarAdded ? "Added to Calendar" : "Add to Calendar",
+                  systemImage: calendarAdded ? "checkmark.circle.fill" : "calendar.badge.plus")
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.glass(tint: TL.Palette.iris))
+        .disabled(calendarAdded)
+    }
+
+    @ViewBuilder
     private var deleteButton: some View {
         Button(role: .destructive) {
             if let serverId = entry.serverId {
@@ -259,6 +274,25 @@ struct EntryDetailView: View {
     private func save() {
         try? modelContext.save()
         syncEngine.scheduleSyncAfterMutation()
+    }
+
+    private func addToCalendar() {
+        Task {
+            if CalendarService.authorization != .fullAccess {
+                _ = await CalendarService.requestAccess()
+            }
+            let start = Date(timeIntervalSince1970: TimeInterval(entry.startedAt))
+            let end = Date(timeIntervalSince1970: TimeInterval(entry.endedAt))
+            let title = editName.isEmpty ? entry.name : editName
+            let cat = editCategory.isEmpty ? entry.category : editCategory
+            let ok = CalendarService.addEvent(
+                title: title,
+                notes: "TimeLogger · \(cat) · \(TL.clockShort(entry.activeSecs))",
+                start: start,
+                end: end
+            )
+            calendarAdded = ok
+        }
     }
 
     private func formatTimestamp(_ ts: Int64) -> String {
