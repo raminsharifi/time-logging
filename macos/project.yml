@@ -9,6 +9,7 @@ schemes:
     build:
       targets:
         TimeLoggerMac: all
+        TimeLoggerWidgets: all
     run:
       config: Debug
 
@@ -21,17 +22,30 @@ targets:
         excludes:
           - Info.plist
           - LaunchAgents
+      - path: ../ios/TimeLoggerWidgetsiOS/Shared.swift
     info:
       path: TimeLogger/Info.plist
       properties:
         CFBundleDisplayName: TimeLogger
         LSUIElement: false
+        NSBluetoothAlwaysUsageDescription: "TimeLogger advertises a BLE peripheral so your iPhone and Apple Watch can sync timers instantly when nearby."
+        NSLocalNetworkUsageDescription: "TimeLogger browses your Wi-Fi for other Macs running the tl daemon so the mesh of your Apple devices stays in sync."
+        NSBonjourServices:
+          - _tl._tcp
     settings:
       SWIFT_VERSION: "5.9"
       PRODUCT_BUNDLE_IDENTIFIER: com.raminsharifi.TimeLogger.mac
       PRODUCT_NAME: TimeLogger
       CODE_SIGN_STYLE: Automatic
       DEVELOPMENT_TEAM: ""
+      CODE_SIGN_ENTITLEMENTS: TimeLogger/TimeLogger.entitlements
+    entitlements:
+      path: TimeLogger/TimeLogger.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.raminsharifi.TimeLogger
+    dependencies:
+      - target: TimeLoggerWidgets
     preBuildScripts:
       - name: Build tl daemon (cargo build --features serve,ble)
         basedOnDependencyAnalysis: false
@@ -66,3 +80,31 @@ targets:
               --options runtime --timestamp=none \
               "$APP_BUNDLE/Contents/MacOS/tl"
           fi
+
+  TimeLoggerWidgets:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: TimeLoggerWidgets
+        excludes:
+          - Info.plist
+      - path: ../ios/TimeLoggerWidgetsiOS/Shared.swift
+      - path: ../ios/TimeLoggerWidgetsiOS/TimerWidget.swift
+    info:
+      path: TimeLoggerWidgets/Info.plist
+      properties:
+        CFBundleDisplayName: TimeLoggerWidgets
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      SWIFT_VERSION: "5.9"
+      PRODUCT_BUNDLE_IDENTIFIER: com.raminsharifi.TimeLogger.mac.widgets
+      CODE_SIGN_STYLE: Automatic
+      DEVELOPMENT_TEAM: ""
+      CODE_SIGN_ENTITLEMENTS: TimeLoggerWidgets/TimeLoggerWidgets.entitlements
+    entitlements:
+      path: TimeLoggerWidgets/TimeLoggerWidgets.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.application-groups:
+          - group.com.raminsharifi.TimeLogger

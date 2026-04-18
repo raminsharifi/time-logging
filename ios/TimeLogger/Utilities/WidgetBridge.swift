@@ -1,47 +1,74 @@
 import Foundation
+import SwiftData
 import WidgetKit
 import ActivityKit
 
-/// Bridges SwiftData timer state to the widget extension's App Group container,
-/// plus manages the Live Activity lifecycle.
+/// Bridges SwiftData timer/entry state to the widget extension's App Group
+/// container and manages the Live Activity lifecycle.
+///
+/// Publishes two pieces of state:
+///   • the currently-running timer (for the live clock)
+///   • today's completed entries (for the 24h horizon bar)
 enum WidgetBridge {
-    static let appGroup = "group.com.raminsharifi.TimeLogger"
-    static let snapshotFile = "widget_timer.json"
+    /// Writes the current timer + today's entries to the App Group and reloads
+    /// widgets. `modelContext` is optional: when nil we skip the day snapshot.
+    static func publish(
+        runningTimer: ActiveTimerLocal?,
+        modelContext: ModelContext? = nil
+    ) {
+        let now = Int64(Date().timeIntervalSince1970)
+        let dayStart = Int64(Calendar.current.startOfDay(for: Date()).timeIntervalSince1970)
 
-    private static func snapshotURL() -> URL? {
-        FileManager.default
-            .containerURL(forSecurityApplicationGroupIdentifier: appGroup)?
-            .appendingPathComponent(snapshotFile)
-    }
-
-    /// Writes the current running-timer state to the App Group and reloads widgets.
-    static func publish(runningTimer: ActiveTimerLocal?) {
-        guard let url = snapshotURL() else {
-            WidgetCenter.shared.reloadAllTimelines()
-            return
+        var todayEntries: [TodaySnapshotEntry] = []
+        var todayTotal: Int64 = 0
+        if let ctx = modelContext {
+            let d = FetchDescriptor<TimeEntryLocal>(
+                predicate: #Predicate { $0.startedAt >= dayStart },
+                sortBy: [SortDescriptor(\.startedAt)]
+            )
+            if let entries = try? ctx.fetch(d) {
+                todayEntries = entries.map { e in
+                    TodaySnapshotEntry(
+                        startedAt: e.startedAt,
+                        endedAt: e.endedAt,
+                        activeSecs: e.activeSecs,
+                        category: e.category
+                    )
+                }
+                todayTotal = entries.reduce(0) { $0 + $1.activeSecs }
+            }
         }
 
-        let dict: [String: Any]
         if let t = runningTimer {
-            dict = [
-                "isRunning": true,
-                "name": t.name,
-                "category": t.category,
-                "startedAt": TimeInterval(t.startedAt),
-                "activeSecs": Int(Date().timeIntervalSince1970) - Int(t.startedAt),
-            ]
+            todayTotal += max(0, now - max(t.startedAt, dayStart))
+        }
+
+        let snap: TimerSnapshot
+        if let t = runningTimer {
+            snap = TimerSnapshot(
+                isRunning: true,
+                name: t.name,
+                category: t.category,
+                startedAt: Date(timeIntervalSince1970: TimeInterval(t.startedAt)),
+                activeSecs: Int(now - t.startedAt),
+                dayStart: dayStart,
+                todayTotalSecs: todayTotal,
+                todayEntries: todayEntries
+            )
         } else {
-            dict = [
-                "isRunning": false,
-                "name": "",
-                "category": "",
-                "startedAt": 0,
-                "activeSecs": 0,
-            ]
+            snap = TimerSnapshot(
+                isRunning: false,
+                name: "",
+                category: "",
+                startedAt: .distantPast,
+                activeSecs: 0,
+                dayStart: dayStart,
+                todayTotalSecs: todayTotal,
+                todayEntries: todayEntries
+            )
         }
-        if let data = try? JSONSerialization.data(withJSONObject: dict) {
-            try? data.write(to: url)
-        }
+
+        TimerSnapshot.write(snap)
         WidgetCenter.shared.reloadAllTimelines()
         updateLiveActivity(runningTimer: runningTimer)
     }
@@ -97,17 +124,4 @@ enum WidgetBridge {
             _ = runningTimer
         }
     }
-}
-
-// MARK: - TimerActivityAttributes (must match widget extension copy)
-
-struct TimerActivityAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable {
-        var name: String
-        var category: String
-        var startedAt: Date
-        var isRunning: Bool
-    }
-
-    var activityId: String = UUID().uuidString
 }

@@ -16,12 +16,17 @@
 		37E8367E79FA38E0720CD332 /* GlassComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494EB89E20D151382C8626FC /* GlassComponents.swift */; };
 		3B11C00D0D9F21AA00FBC8D9 /* BreakPeriod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5652E57F94EA4E28AA0FD5 /* BreakPeriod.swift */; };
 		428A8080C342425277D1183E /* AnalyticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6E39F0F39F85A343021B6DC /* AnalyticsView.swift */; };
+		49FE2E80B5A169F4089F7BD4 /* DeviceIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309CB95445FD99DB72C0EE21 /* DeviceIdentity.swift */; };
 		4AC81D33F91E8742E7779D3F /* TodoItemLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F5B74266C21AE4A3F8F786 /* TodoItemLocal.swift */; };
 		56D95FC972B6E2DFFAF8F1C6 /* TimeEntryLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECC9C2D9935879FC9C191D9 /* TimeEntryLocal.swift */; };
 		60E5C692DAC829847AAFA04F /* WidgetBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659A2790306ECB811B20A0AB /* WidgetBridge.swift */; };
+		6534C1367727487AC6501857 /* PeerDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 695226352457745800C242F6 /* PeerDiscovery.swift */; };
 		70F8191BCB2865952F8AE95B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80373AAF38DD3054A0D75B8D /* SettingsView.swift */; };
 		768B336E486EECC93D349BD3 /* PendingDeletion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7894F3F79F79BDE6E726B90B /* PendingDeletion.swift */; };
+		7B681F6E381CD939CC9D436D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D54D1B302853BE22A91C34DE /* Assets.xcassets */; };
+		87F9120C1A36B7BE8BC0FE1E /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ACB58B4554499916581D31D /* HTTPClient.swift */; };
 		906AAF811EC232A4A2E9264E /* TimerAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4D4FECF2462067BE900CF7 /* TimerAppIntents.swift */; };
+		AFA33B62FC751974515C417E /* Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB88047DD2D8DAD3149C00EC /* Shared.swift */; };
 		B00D9C656A4E568B91CA5D5F /* SyncMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF163C5CFDBCBD609290D8E1 /* SyncMetadata.swift */; };
 		B4B50677BFA0513A1B587B31 /* EntriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6045516D821BE747A0B9B8B /* EntriesView.swift */; };
 		B5BB4F4A207F72AF703E7E3F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA33956557B57C3AABC26035 /* ContentView.swift */; };
@@ -31,6 +36,7 @@
 		D1C6389137BDCC065E0C7480 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7ADC85F34F87EBADD3C0B4 /* DesignSystem.swift */; };
 		D58A2E55D9D7291791681927 /* TimerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D25E05707F98FA4736B317D /* TimerWidget.swift */; };
 		D5F35E6CB3DA98AB40E1EBC1 /* Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB88047DD2D8DAD3149C00EC /* Shared.swift */; };
+		D8CBA1AB3C0DEB2561CAF14B /* ServerSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B435500DA141DB0EB9F2430D /* ServerSelection.swift */; };
 		E3D3BECB3C3637E7C60751F7 /* NewTimerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1632127582D56A8980F82039 /* NewTimerSheet.swift */; };
 		E612EEB00C53D9E99F8EECB6 /* TimersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5596490CD14962EA5840816A /* TimersView.swift */; };
 		E7A1EDE69D8B89EBE5C3CA69 /* TodosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177849236F57616A4ECD6DF5 /* TodosView.swift */; };
@@ -67,6 +73,7 @@
 		1632127582D56A8980F82039 /* NewTimerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTimerSheet.swift; sourceTree = "<group>"; };
 		177849236F57616A4ECD6DF5 /* TodosView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodosView.swift; sourceTree = "<group>"; };
 		2AEB0B4CBF0A319E563F48CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		309CB95445FD99DB72C0EE21 /* DeviceIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentity.swift; sourceTree = "<group>"; };
 		3ECC9C2D9935879FC9C191D9 /* TimeEntryLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeEntryLocal.swift; sourceTree = "<group>"; };
 		45F5B74266C21AE4A3F8F786 /* TodoItemLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoItemLocal.swift; sourceTree = "<group>"; };
 		48C208666BD124E16D09C60A /* TimeLoggerWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLoggerWidgets.swift; sourceTree = "<group>"; };
@@ -75,21 +82,25 @@
 		5596490CD14962EA5840816A /* TimersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimersView.swift; sourceTree = "<group>"; };
 		5B5652E57F94EA4E28AA0FD5 /* BreakPeriod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakPeriod.swift; sourceTree = "<group>"; };
 		659A2790306ECB811B20A0AB /* WidgetBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBridge.swift; sourceTree = "<group>"; };
+		695226352457745800C242F6 /* PeerDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeerDiscovery.swift; sourceTree = "<group>"; };
 		6C04B6367941A8F89FF247FB /* CloudKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitManager.swift; sourceTree = "<group>"; };
 		7894F3F79F79BDE6E726B90B /* PendingDeletion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingDeletion.swift; sourceTree = "<group>"; };
 		79E3B4C7AC2C1E7F85F8C4B1 /* EntryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryDetailView.swift; sourceTree = "<group>"; };
 		7D25E05707F98FA4736B317D /* TimerWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerWidget.swift; sourceTree = "<group>"; };
 		80373AAF38DD3054A0D75B8D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		8ACB58B4554499916581D31D /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		9531F45E07BFF30BC37C8F3C /* TimerLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerLiveActivity.swift; sourceTree = "<group>"; };
-		A05218D450E8FF1AE7D6A28A /* TimeLogger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimeLogger.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A05218D450E8FF1AE7D6A28A /* TimeLogger.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TimeLogger.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B10355026926AF25127CB9E4 /* TimeLogger.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TimeLogger.entitlements; sourceTree = "<group>"; };
+		B435500DA141DB0EB9F2430D /* ServerSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerSelection.swift; sourceTree = "<group>"; };
 		BBA54AE4BC3A1D5E330CDBD8 /* ActiveTimerLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveTimerLocal.swift; sourceTree = "<group>"; };
 		C27AE88DDABC4C2753899BDE /* TimeLoggerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLoggerApp.swift; sourceTree = "<group>"; };
 		CA33956557B57C3AABC26035 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D4088DB1000D42C61E850DC4 /* BLEConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEConstants.swift; sourceTree = "<group>"; };
+		D54D1B302853BE22A91C34DE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D6E39F0F39F85A343021B6DC /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsView.swift; sourceTree = "<group>"; };
 		E6045516D821BE747A0B9B8B /* EntriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntriesView.swift; sourceTree = "<group>"; };
-		EB454CBE394A6FA773AFFD24 /* TimeLoggerWidgetsiOS.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TimeLoggerWidgetsiOS.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB454CBE394A6FA773AFFD24 /* TimeLoggerWidgetsiOS.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = TimeLoggerWidgetsiOS.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5771F8EC5DF446BF0E43F27 /* SyncEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncEngine.swift; sourceTree = "<group>"; };
 		FA4D4FECF2462067BE900CF7 /* TimerAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerAppIntents.swift; sourceTree = "<group>"; };
 		FB88047DD2D8DAD3149C00EC /* Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared.swift; sourceTree = "<group>"; };
@@ -146,6 +157,7 @@
 		738DF01AD97D74D7B2DF6098 /* TimeLogger */ = {
 			isa = PBXGroup;
 			children = (
+				D54D1B302853BE22A91C34DE /* Assets.xcassets */,
 				CA33956557B57C3AABC26035 /* ContentView.swift */,
 				B10355026926AF25127CB9E4 /* TimeLogger.entitlements */,
 				C27AE88DDABC4C2753899BDE /* TimeLoggerApp.swift */,
@@ -162,6 +174,9 @@
 			children = (
 				06F2559A807CFE31D01F3C24 /* BLEManager.swift */,
 				6C04B6367941A8F89FF247FB /* CloudKitManager.swift */,
+				8ACB58B4554499916581D31D /* HTTPClient.swift */,
+				695226352457745800C242F6 /* PeerDiscovery.swift */,
+				B435500DA141DB0EB9F2430D /* ServerSelection.swift */,
 				F5771F8EC5DF446BF0E43F27 /* SyncEngine.swift */,
 			);
 			path = Networking;
@@ -186,6 +201,7 @@
 			children = (
 				BBA54AE4BC3A1D5E330CDBD8 /* ActiveTimerLocal.swift */,
 				5B5652E57F94EA4E28AA0FD5 /* BreakPeriod.swift */,
+				309CB95445FD99DB72C0EE21 /* DeviceIdentity.swift */,
 				7894F3F79F79BDE6E726B90B /* PendingDeletion.swift */,
 				FF163C5CFDBCBD609290D8E1 /* SyncMetadata.swift */,
 				3ECC9C2D9935879FC9C191D9 /* TimeEntryLocal.swift */,
@@ -202,6 +218,7 @@
 			buildConfigurationList = 28AC4F8F2CB12D8BF3314D7E /* Build configuration list for PBXNativeTarget "TimeLogger" */;
 			buildPhases = (
 				C453D249D7BE6A16895E105E /* Sources */,
+				090649B248E4C95C85E7653E /* Resources */,
 				D2BB32B279647557C9AE949B /* Embed Foundation Extensions */,
 			);
 			buildRules = (
@@ -243,9 +260,11 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					883EE8433B40772682F024AC = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					B6E8466EF3B4CCB4087B05B4 = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -269,6 +288,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		090649B248E4C95C85E7653E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7B681F6E381CD939CC9D436D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		B41975069EEE099B2E9BCC8F /* Sources */ = {
@@ -295,13 +325,18 @@
 				04D7763EE033E438F8D8842A /* CloudKitManager.swift in Sources */,
 				B5BB4F4A207F72AF703E7E3F /* ContentView.swift in Sources */,
 				D1C6389137BDCC065E0C7480 /* DesignSystem.swift in Sources */,
+				49FE2E80B5A169F4089F7BD4 /* DeviceIdentity.swift in Sources */,
 				B4B50677BFA0513A1B587B31 /* EntriesView.swift in Sources */,
 				BD5B1FE45E5E302979D30B43 /* EntryDetailView.swift in Sources */,
 				3151E3492E18D2FC0B932478 /* Formatting.swift in Sources */,
 				37E8367E79FA38E0720CD332 /* GlassComponents.swift in Sources */,
+				87F9120C1A36B7BE8BC0FE1E /* HTTPClient.swift in Sources */,
 				E3D3BECB3C3637E7C60751F7 /* NewTimerSheet.swift in Sources */,
+				6534C1367727487AC6501857 /* PeerDiscovery.swift in Sources */,
 				768B336E486EECC93D349BD3 /* PendingDeletion.swift in Sources */,
+				D8CBA1AB3C0DEB2561CAF14B /* ServerSelection.swift in Sources */,
 				70F8191BCB2865952F8AE95B /* SettingsView.swift in Sources */,
+				AFA33B62FC751974515C417E /* Shared.swift in Sources */,
 				CBA9FB795C6D2106DFC1AD9E /* SyncEngine.swift in Sources */,
 				B00D9C656A4E568B91CA5D5F /* SyncMetadata.swift in Sources */,
 				56D95FC972B6E2DFFAF8F1C6 /* TimeEntryLocal.swift in Sources */,
@@ -329,7 +364,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TimeLoggerWidgetsiOS/TimeLoggerWidgetsiOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5GG57Z8282;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = TimeLoggerWidgetsiOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -339,7 +374,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.raminsharifi.TimeLogger.widgets;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -348,7 +383,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TimeLoggerWidgetsiOS/TimeLoggerWidgetsiOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5GG57Z8282;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = TimeLoggerWidgetsiOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -358,7 +393,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.raminsharifi.TimeLogger.widgets;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -369,10 +404,11 @@
 				CODE_SIGN_ENTITLEMENTS = TimeLogger/TimeLogger.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5GG57Z8282;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = TimeLogger/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -380,7 +416,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.raminsharifi.TimeLogger;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -391,10 +427,11 @@
 				CODE_SIGN_ENTITLEMENTS = TimeLogger/TimeLogger.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5GG57Z8282;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = TimeLogger/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -402,7 +439,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.raminsharifi.TimeLogger;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};

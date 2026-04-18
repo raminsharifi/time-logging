@@ -21,6 +21,7 @@ targets:
       - path: TimeLogger
         excludes:
           - Info.plist
+      - path: TimeLoggerWidgetsiOS/Shared.swift
     info:
       path: TimeLogger/Info.plist
       properties:
@@ -29,15 +30,21 @@ targets:
         UIBackgroundModes:
           - bluetooth-central
         NSBluetoothAlwaysUsageDescription: "TimeLogger uses Bluetooth to sync with your Mac."
+        NSLocalNetworkUsageDescription: "TimeLogger browses your Wi-Fi for Macs running the tl daemon so the mesh of your Apple devices stays in sync."
+        NSBonjourServices:
+          - _tl._tcp
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
         NSSupportsLiveActivities: true
     settings:
       SWIFT_VERSION: "5.9"
       PRODUCT_BUNDLE_IDENTIFIER: com.raminsharifi.TimeLogger
       CODE_SIGN_STYLE: Automatic
       DEVELOPMENT_TEAM: ""
-      TARGETED_DEVICE_FAMILY: "1"
+      TARGETED_DEVICE_FAMILY: "1,2"
       INFOPLIST_KEY_UIApplicationSceneManifest_Generation: true
       INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+      INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
     entitlements:
       path: TimeLogger/TimeLogger.entitlements
       properties:
@@ -66,7 +73,7 @@ targets:
       PRODUCT_BUNDLE_IDENTIFIER: com.raminsharifi.TimeLogger.widgets
       CODE_SIGN_STYLE: Automatic
       DEVELOPMENT_TEAM: ""
-      TARGETED_DEVICE_FAMILY: "1"
+      TARGETED_DEVICE_FAMILY: "1,2"
     entitlements:
       path: TimeLoggerWidgetsiOS/TimeLoggerWidgetsiOS.entitlements
       properties:
