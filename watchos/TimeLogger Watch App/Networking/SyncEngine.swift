@@ -55,7 +55,7 @@ final class SyncEngine {
     func scheduleSyncAfterMutation() {
         debounceTask?.cancel()
         debounceTask = Task {
-            try? await Task.sleep(for: .seconds(2))
+            try? await Task.sleep(for: .milliseconds(500))
             guard !Task.isCancelled else { return }
             await syncIfReachable(modelContainer: nil)
         }

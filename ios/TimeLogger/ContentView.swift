@@ -14,7 +14,7 @@ struct ContentView: View {
     @State private var selected: Tab = .timers
     @State private var syncInFlight = false
 
-    private let syncTimer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
+    private let syncTimer = Timer.publish(every: 2, on: .main, in: .common).autoconnect()
 
     enum Tab: Hashable, CaseIterable {
         case timers, log, stats, todos, settings

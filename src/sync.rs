@@ -259,6 +259,18 @@ pub async fn handle_sync(
 
     state::set_sync_ts(&conn, &req.client_id, now_ts);
 
+    // If the client contributed changes, bump every other connected central
+    // so they pull the fresh state without waiting for their own poll.
+    let pushed_anything = !req.changes.active_timers.is_empty()
+        || !req.changes.time_entries.is_empty()
+        || !req.changes.todos.is_empty()
+        || !req.changes.deletions.is_empty();
+    drop(conn);
+    if pushed_anything {
+        #[cfg(feature = "ble")]
+        crate::ble::notify_change();
+    }
+
     Json(SyncResponse {
         server_changes: SyncChanges {
             active_timers: server_timers,

@@ -35,6 +35,11 @@ final class SyncEngine: ObservableObject {
         self.bleManager = bleManager
         self.cloudKit = cloudKit
         self.http = http
+        // Mac pushes a one-byte "change happened" BLE notification after every
+        // mutation so we don't wait for the next poll.
+        bleManager.onServerEvent = { [weak self] in
+            self?.scheduleSyncAfterMutation()
+        }
     }
 
     func setModelContext(_ context: ModelContext) {

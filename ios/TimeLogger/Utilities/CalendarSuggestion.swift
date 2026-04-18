@@ -67,7 +67,8 @@ enum CalendarService {
 
     /// Write a completed session into the user's default calendar. Returns
     /// true on success. Caller must have previously obtained full access via
-    /// `requestAccess()` (e.g. in the New Timer sheet).
+    /// `requestAccess()` (e.g. in the New Timer sheet). watchOS doesn't
+    /// expose `save(_:span:)`, so this is a no-op there.
     @discardableResult
     static func addEvent(
         title: String,
@@ -75,6 +76,9 @@ enum CalendarService {
         start: Date,
         end: Date
     ) -> Bool {
+        #if os(watchOS)
+        return false
+        #else
         guard authorization == .fullAccess else { return false }
         guard let cal = store.defaultCalendarForNewEvents else { return false }
         let event = EKEvent(eventStore: store)
@@ -89,6 +93,7 @@ enum CalendarService {
         } catch {
             return false
         }
+        #endif
     }
 }
 

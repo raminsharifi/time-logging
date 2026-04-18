@@ -9,6 +9,9 @@ static NSString *const kResponseCharUUID = @"7B2C956E-9A32-4E00-9B8D-3C1A5E809F2
 // Chunk flags
 static const uint8_t CHUNK_FIRST = 0x01;
 static const uint8_t CHUNK_LAST = 0x02;
+// Server-initiated push event: payload-less marker telling the central that
+// something on the Mac changed and it should run a sync.
+static const uint8_t CHUNK_EVENT = 0x04;
 static const int MAX_CHUNK_PAYLOAD = 500;
 
 // --- BLE Request/Response JSON wrappers ---
@@ -322,6 +325,15 @@ didUnsubscribeFromCharacteristic:(CBCharacteristic *)characteristic {
     NSLog(@"[BLE] Peripheral stopped");
 }
 
+- (void)notifyChange {
+    if (self.subscribedCentrals.count == 0) return;
+    uint8_t flags = CHUNK_EVENT;
+    NSData *chunk = [NSData dataWithBytes:&flags length:1];
+    [self.peripheralManager updateValue:chunk
+                      forCharacteristic:self.responseChar
+                   onSubscribedCentrals:self.subscribedCentrals];
+}
+
 @end
 
 // --- C API ---
@@ -358,4 +370,12 @@ const char* ble_get_connected_devices(void) {
 
 void ble_free_string(const char *ptr) {
     if (ptr) free((void *)ptr);
+}
+
+void ble_notify_change(void) {
+    @autoreleasepool {
+        if (g_peripheral) {
+            [g_peripheral notifyChange];
+        }
+    }
 }

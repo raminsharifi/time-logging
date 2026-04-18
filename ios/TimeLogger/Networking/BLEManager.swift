@@ -38,6 +38,11 @@ final class BLEManager: NSObject, ObservableObject {
     private var writeQueue: [Data] = []
     private var isWriting = false
 
+    /// Fired when the peripheral pushes a "change" event notification. Higher
+    /// layers (SyncEngine) should kick off a sync when this fires so Mac →
+    /// iPhone mutations propagate without waiting for the polling interval.
+    var onServerEvent: (@MainActor () -> Void)?
+
     override init() {
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil)
@@ -235,6 +240,14 @@ final class BLEManager: NSObject, ObservableObject {
         guard data.count >= 1 else { return }
         let flags = data[0]
         let payload = data.subdata(in: 1..<data.count)
+
+        // Server push: peripheral telling us "something changed". There's no
+        // pending request to match this to — just fan out to the sync layer.
+        if flags & BLEConstants.chunkEvent != 0 && payload.isEmpty {
+            let handler = onServerEvent
+            Task { @MainActor in handler?() }
+            return
+        }
 
         if flags & BLEConstants.chunkFirst != 0 {
             // First chunk: read 4-byte length header

@@ -14,4 +14,9 @@ void ble_peripheral_stop(void);
 const char* ble_get_connected_devices(void);
 void ble_free_string(const char *ptr);
 
+// Push a one-byte "change event" notification to every subscribed central so
+// they immediately pull the latest state. Safe to call from any thread; a
+// no-op when no centrals are subscribed.
+void ble_notify_change(void);
+
 #endif

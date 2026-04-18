@@ -11,6 +11,14 @@ use crate::state::proto;
 
 pub type Db = Arc<Mutex<Connection>>;
 
+/// Push a BLE change event to all subscribed centrals (no-op without the BLE
+/// feature). Call after any mutation so connected iOS/watchOS devices pull
+/// the fresh state immediately instead of waiting for their next poll.
+fn bump_clients() {
+    #[cfg(feature = "ble")]
+    crate::ble::notify_change();
+}
+
 fn breaks_to_periods(breaks: &[proto::Break]) -> Vec<BreakPeriod> {
     breaks.iter().map(|b| BreakPeriod { start_ts: b.start_ts, end_ts: b.end_ts }).collect()
 }
@@ -97,6 +105,8 @@ pub async fn start_timer(
     };
     let id = state::insert_active(&conn, &timer);
     let inserted = state::get_active_by_id(&conn, id).unwrap();
+    drop(conn);
+    bump_clients();
     (StatusCode::CREATED, Json(timer_to_response(&inserted)))
 }
 
@@ -130,6 +140,8 @@ pub async fn stop_timer(
     state::clear_active(&conn, id);
 
     let last = state::get_last_entry(&conn).unwrap();
+    drop(conn);
+    bump_clients();
     Ok(Json(entry_to_response(&last)))
 }
 
@@ -149,6 +161,8 @@ pub async fn pause_timer(
     state::update_active(&conn, &timer);
 
     let updated = state::get_active_by_id(&conn, id).unwrap();
+    drop(conn);
+    bump_clients();
     Ok(Json(timer_to_response(&updated)))
 }
 
@@ -177,6 +191,8 @@ pub async fn resume_timer(
     state::update_active(&conn, &timer);
 
     let updated = state::get_active_by_id(&conn, id).unwrap();
+    drop(conn);
+    bump_clients();
     Ok(Json(timer_to_response(&updated)))
 }
 
@@ -230,6 +246,8 @@ pub async fn edit_entry(
 
     state::update_entry(&conn, &entry);
     let updated = state::get_entry_by_id(&conn, id).unwrap();
+    drop(conn);
+    bump_clients();
     Ok(Json(entry_to_response(&updated)))
 }
 
@@ -238,7 +256,10 @@ pub async fn delete_entry(
     Path(id): Path<u32>,
 ) -> StatusCode {
     let conn = db.lock().unwrap();
-    if state::delete_entry(&conn, id) {
+    let ok = state::delete_entry(&conn, id);
+    drop(conn);
+    if ok {
+        bump_clients();
         StatusCode::NO_CONTENT
     } else {
         StatusCode::NOT_FOUND
@@ -261,7 +282,10 @@ pub async fn add_todo(
     let now_ts = Local::now().timestamp();
     let id = state::add_todo(&conn, &req.text, now_ts);
     let todo = state::get_todo_by_id(&conn, id).unwrap();
-    (StatusCode::CREATED, Json(todo_to_response(&conn, &todo)))
+    let response = todo_to_response(&conn, &todo);
+    drop(conn);
+    bump_clients();
+    (StatusCode::CREATED, Json(response))
 }
 
 pub async fn edit_todo(
@@ -284,7 +308,10 @@ pub async fn edit_todo(
     }
 
     let updated = state::get_todo_by_id(&conn, id).unwrap();
-    Ok(Json(todo_to_response(&conn, &updated)))
+    let response = todo_to_response(&conn, &updated);
+    drop(conn);
+    bump_clients();
+    Ok(Json(response))
 }
 
 pub async fn delete_todo(
@@ -292,7 +319,10 @@ pub async fn delete_todo(
     Path(id): Path<u32>,
 ) -> StatusCode {
     let conn = db.lock().unwrap();
-    if state::remove_todo(&conn, id) {
+    let ok = state::remove_todo(&conn, id);
+    drop(conn);
+    if ok {
+        bump_clients();
         StatusCode::NO_CONTENT
     } else {
         StatusCode::NOT_FOUND

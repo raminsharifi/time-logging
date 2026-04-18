@@ -6,6 +6,7 @@ unsafe extern "C" {
     fn ble_peripheral_stop();
     fn ble_get_connected_devices() -> *const c_char;
     fn ble_free_string(ptr: *const c_char);
+    fn ble_notify_change();
 }
 
 pub fn start(port: u16) {
@@ -27,4 +28,10 @@ pub fn connected_devices_json() -> String {
         ble_free_string(ptr);
         s
     }
+}
+
+/// Push a lightweight "data changed" bump to every subscribed BLE central so
+/// they resync immediately. No-op when the `ble` feature isn't compiled in.
+pub fn notify_change() {
+    unsafe { ble_notify_change(); }
 }
