@@ -36,6 +36,15 @@ targets:
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
         NSSupportsLiveActivities: true
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
     settings:
       SWIFT_VERSION: "5.9"
       PRODUCT_BUNDLE_IDENTIFIER: com.raminsharifi.TimeLogger
