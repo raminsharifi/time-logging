@@ -78,50 +78,65 @@ enum WidgetBridge {
     private static var currentActivityId: String?
 
     private static func updateLiveActivity(runningTimer: ActiveTimerLocal?) {
-        if #available(iOS 16.2, *) {
-            if let t = runningTimer {
-                let state = TimerActivityAttributes.ContentState(
-                    name: t.name,
-                    category: t.category,
-                    startedAt: Date(timeIntervalSince1970: TimeInterval(t.startedAt)),
-                    isRunning: true
-                )
-                if let id = currentActivityId,
-                   let existing = Activity<TimerActivityAttributes>.activities.first(where: { $0.id == id }) {
-                    Task { await existing.update(ActivityContent(state: state, staleDate: nil)) }
-                } else {
-                    let attrs = TimerActivityAttributes()
-                    do {
-                        let activity = try Activity.request(
-                            attributes: attrs,
-                            content: ActivityContent(state: state, staleDate: nil),
-                            pushType: nil
-                        )
-                        currentActivityId = activity.id
-                    } catch {
-                        // Live Activities may be disabled; silent failure is fine.
-                    }
-                }
-            } else {
-                if let id = currentActivityId,
-                   let existing = Activity<TimerActivityAttributes>.activities.first(where: { $0.id == id }) {
-                    let finalState = TimerActivityAttributes.ContentState(
-                        name: existing.content.state.name,
-                        category: existing.content.state.category,
-                        startedAt: existing.content.state.startedAt,
-                        isRunning: false
-                    )
+        guard #available(iOS 16.2, *) else { return }
+
+        // Reconcile against every Live Activity of our attribute type, not
+        // just the one whose id we remember. `currentActivityId` is a static
+        // that resets when the app is killed, and Live Activities outlive
+        // the process — so a stale activity from a previous launch (or a
+        // second one accidentally spawned) must be findable and endable.
+        let existing = Activity<TimerActivityAttributes>.activities
+
+        if let t = runningTimer {
+            let state = TimerActivityAttributes.ContentState(
+                name: t.name,
+                category: t.category,
+                startedAt: Date(timeIntervalSince1970: TimeInterval(t.startedAt)),
+                isRunning: true
+            )
+            if let primary = existing.first {
+                currentActivityId = primary.id
+                Task { await primary.update(ActivityContent(state: state, staleDate: nil)) }
+                // Kill any additional strays so the Dynamic Island / Lock Screen
+                // never stacks duplicates.
+                for extra in existing.dropFirst() {
                     Task {
-                        await existing.end(
-                            ActivityContent(state: finalState, staleDate: nil),
+                        await extra.end(
+                            ActivityContent(state: extra.content.state, staleDate: nil),
                             dismissalPolicy: .immediate
                         )
                     }
-                    currentActivityId = nil
+                }
+            } else {
+                do {
+                    let activity = try Activity.request(
+                        attributes: TimerActivityAttributes(),
+                        content: ActivityContent(state: state, staleDate: nil),
+                        pushType: nil
+                    )
+                    currentActivityId = activity.id
+                } catch {
+                    // Live Activities may be disabled; silent failure is fine.
                 }
             }
         } else {
-            _ = runningTimer
+            // No running timer — end every lingering activity, including any
+            // that survived an app kill.
+            for activity in existing {
+                let finalState = TimerActivityAttributes.ContentState(
+                    name: activity.content.state.name,
+                    category: activity.content.state.category,
+                    startedAt: activity.content.state.startedAt,
+                    isRunning: false
+                )
+                Task {
+                    await activity.end(
+                        ActivityContent(state: finalState, staleDate: nil),
+                        dismissalPolicy: .immediate
+                    )
+                }
+            }
+            currentActivityId = nil
         }
     }
 }
