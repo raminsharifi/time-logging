@@ -201,7 +201,11 @@ struct TimersView: View {
     // MARK: - Quick start
 
     private var quickStart: some View {
-        let cats = Array(Set(allEntries.map { $0.category })).prefix(4).sorted()
+        // Sort before truncating: Set iteration order is hash-based, so
+        // `.prefix(4).sorted()` picked four arbitrary categories whenever
+        // allEntries changed (e.g., on every sync tick) and the visible grid
+        // reshuffled. Sort first, then take the top 4.
+        let cats = Array(Set(allEntries.map { $0.category })).sorted().prefix(4)
         let fallback = ["Deep Work", "Meetings", "Review", "Admin"]
         let shown = cats.isEmpty ? fallback : Array(cats)
 
