@@ -173,6 +173,14 @@ final class BLEManager: NSObject, ObservableObject {
         guard isConnected, let reqChar = requestChar, let p = peripheral else {
             throw BLEError.notConnected
         }
+        // A previous request is still awaiting its response. Overwriting
+        // pendingCompletion here would orphan its continuation (Swift prints
+        // "CONTINUATION MISUSE: sendRequest leaked its continuation"). Bail
+        // fast — the caller (SyncEngine polling loop) will retry on the next
+        // tick once the in-flight request resolves or times out.
+        guard pendingCompletion == nil else {
+            throw BLEError.busy
+        }
 
         let requestData = try JSONEncoder().encode(request)
 
@@ -543,6 +551,7 @@ enum BLEError: LocalizedError {
     case timeout
     case disconnected
     case invalidResponse
+    case busy
 
     var errorDescription: String? {
         switch self {
@@ -550,6 +559,7 @@ enum BLEError: LocalizedError {
         case .timeout: "Request timed out"
         case .disconnected: "Disconnected from Mac"
         case .invalidResponse: "Invalid response"
+        case .busy: "BLE request already in flight"
         }
     }
 }
