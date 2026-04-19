@@ -20,7 +20,15 @@ struct TimeLoggerApp: App {
             PendingDeletion.self,
             SyncMetadata.self,
         ])
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        // Disable SwiftData's auto-CloudKit sync: CloudKitManager owns the
+        // iCloud.com.raminsharifi.TimeLogger container directly, and leaving
+        // this on .automatic spawns redundant CoreData+CloudKit background
+        // tasks against the same container (surfaces as BGTaskScheduler errors).
+        let config = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: false,
+            cloudKitDatabase: .none
+        )
         do {
             modelContainer = try ModelContainer(for: schema, configurations: [config])
         } catch {
