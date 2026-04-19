@@ -137,9 +137,31 @@ final class CloudKitManager: ObservableObject {
     }
 
     func fetchChanges() async throws -> FetchedChanges {
+        do {
+            return try await fetchZoneChanges(since: changeToken)
+        } catch let error as CKError {
+            switch error.code {
+            case .changeTokenExpired:
+                // Server says our token is too stale to do an incremental
+                // fetch (this is what "client knowledge differs from server
+                // knowledge" maps to). Drop it and do a full refetch.
+                changeToken = nil
+                return try await fetchZoneChanges(since: nil)
+            case .zoneNotFound, .userDeletedZone:
+                // Zone was wiped server-side — recreate it and start fresh.
+                changeToken = nil
+                try await ensureZoneExists()
+                return try await fetchZoneChanges(since: nil)
+            default:
+                throw error
+            }
+        }
+    }
+
+    private func fetchZoneChanges(since token: CKServerChangeToken?) async throws -> FetchedChanges {
         var result = FetchedChanges()
 
-        let changes = try await database.recordZoneChanges(inZoneWith: zoneID, since: changeToken)
+        let changes = try await database.recordZoneChanges(inZoneWith: zoneID, since: token)
 
         for (_, modResult) in changes.modificationResultsByID {
             if case .success(let modification) = modResult {
