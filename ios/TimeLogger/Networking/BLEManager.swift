@@ -194,9 +194,11 @@ final class BLEManager: NSObject, ObservableObject {
                 continuation.resume(with: result)
             }
 
-            // 10 second timeout
+            // Timeout covers the full round-trip (chunked write + chunked
+            // notify response). First-sync payloads are several KB, and .withResponse
+            // chunked writes over BLE run roughly 100ms each — 10s was too tight.
             requestTimer?.invalidate()
-            requestTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { [weak self] _ in
+            requestTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: false) { [weak self] _ in
                 self?.pendingCompletion?(.failure(BLEError.timeout))
                 self?.pendingCompletion = nil
             }

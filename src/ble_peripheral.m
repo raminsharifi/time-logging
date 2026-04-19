@@ -54,6 +54,14 @@ static const int MAX_CHUNK_PAYLOAD = 500;
 @property (nonatomic, strong) NSMutableArray<CBCentral *> *subscribedCentrals;
 // Track connected device info
 @property (nonatomic, strong) NSMutableArray<NSDictionary *> *connectedDevices;
+
+// Queue of response chunks waiting to be written to the notify characteristic.
+// CoreBluetooth drains this lazily: updateValue: returns NO when the TX queue
+// is full, and peripheralManagerIsReadyToUpdateSubscribers: fires once space
+// opens up. Without this, a multi-chunk response loses chunks and the iPhone
+// waits for CHUNK_LAST forever.
+@property (nonatomic, strong) NSMutableArray<NSData *> *pendingChunks;
+@property (nonatomic, strong) dispatch_queue_t bleQueue;
 @end
 
 @implementation TLBLEPeripheral
@@ -65,10 +73,11 @@ static const int MAX_CHUNK_PAYLOAD = 500;
         _receiveBuffer = [NSMutableData data];
         _subscribedCentrals = [NSMutableArray array];
         _connectedDevices = [NSMutableArray array];
+        _pendingChunks = [NSMutableArray array];
         _isReceiving = NO;
 
-        dispatch_queue_t queue = dispatch_queue_create("com.tl.ble", DISPATCH_QUEUE_SERIAL);
-        _peripheralManager = [[CBPeripheralManager alloc] initWithDelegate:self queue:queue];
+        _bleQueue = dispatch_queue_create("com.tl.ble", DISPATCH_QUEUE_SERIAL);
+        _peripheralManager = [[CBPeripheralManager alloc] initWithDelegate:self queue:_bleQueue];
     }
     return self;
 }
@@ -289,6 +298,7 @@ didUnsubscribeFromCharacteristic:(CBCharacteristic *)characteristic {
 
     NSUInteger totalChunks = (fullData.length + mtuPayload - 1) / mtuPayload;
 
+    NSMutableArray<NSData *> *chunks = [NSMutableArray arrayWithCapacity:totalChunks];
     for (NSUInteger i = 0; i < totalChunks; i++) {
         NSUInteger start = i * mtuPayload;
         NSUInteger len = MIN(mtuPayload, fullData.length - start);
@@ -300,23 +310,34 @@ didUnsubscribeFromCharacteristic:(CBCharacteristic *)characteristic {
 
         NSMutableData *chunk = [NSMutableData dataWithBytes:&flags length:1];
         [chunk appendData:payload];
+        [chunks addObject:[chunk copy]];
+    }
 
+    // Hand off to the BLE queue so enqueue + drain are serialized with the
+    // peripheralManagerIsReadyToUpdateSubscribers callback.
+    dispatch_async(self.bleQueue, ^{
+        [self.pendingChunks addObjectsFromArray:chunks];
+        [self drainPendingChunks];
+    });
+}
+
+// Must be called on self.bleQueue.
+- (void)drainPendingChunks {
+    while (self.pendingChunks.count > 0) {
+        NSData *chunk = self.pendingChunks.firstObject;
         BOOL sent = [self.peripheralManager updateValue:chunk
                                       forCharacteristic:self.responseChar
                                    onSubscribedCentrals:self.subscribedCentrals.count > 0 ? self.subscribedCentrals : nil];
         if (!sent) {
-            // Queue is full — wait for peripheralManagerIsReadyToUpdateSubscribers callback
-            // For simplicity, retry after a short delay
-            [NSThread sleepForTimeInterval:0.01];
-            [self.peripheralManager updateValue:chunk
-                              forCharacteristic:self.responseChar
-                           onSubscribedCentrals:nil];
+            // TX queue full — stop; the ready callback will resume the drain.
+            return;
         }
+        [self.pendingChunks removeObjectAtIndex:0];
     }
 }
 
 - (void)peripheralManagerIsReadyToUpdateSubscribers:(CBPeripheralManager *)peripheral {
-    // Called when the transmit queue has space again
+    [self drainPendingChunks];
 }
 
 - (void)stop {
