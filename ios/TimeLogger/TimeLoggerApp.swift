@@ -61,6 +61,10 @@ struct TimeLoggerApp: App {
                     syncEngine.setModelContext(modelContainer.mainContext)
                     http.configure(selection.endpoint.baseURL)
                     peers.start()
+                    // Fold duplicates from the pre-fix era before the first
+                    // sync runs, otherwise the BLE payload stays huge and
+                    // every poll times out.
+                    DedupeStore.run(context: modelContainer.mainContext)
                     Task {
                         await cloudKit.setup()
                         if http.baseURL != nil { _ = await http.ping() }

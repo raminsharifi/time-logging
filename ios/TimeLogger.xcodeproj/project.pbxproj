@@ -43,6 +43,7 @@
 		E612EEB00C53D9E99F8EECB6 /* TimersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5596490CD14962EA5840816A /* TimersView.swift */; };
 		E7A1EDE69D8B89EBE5C3CA69 /* TodosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177849236F57616A4ECD6DF5 /* TodosView.swift */; };
 		EA598A0392BC214CDB20B9D1 /* TimeLoggerWidgetsiOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = EB454CBE394A6FA773AFFD24 /* TimeLoggerWidgetsiOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		EF0E7360E391187962F913F7 /* DedupeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BF3BF066204995473E6252E /* DedupeStore.swift */; };
 		FDDA731D30DD01503CE94F5B /* TimerLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9531F45E07BFF30BC37C8F3C /* TimerLiveActivity.swift */; };
 /* End PBXBuildFile section */
 
@@ -74,6 +75,7 @@
 		06F2559A807CFE31D01F3C24 /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
 		1632127582D56A8980F82039 /* NewTimerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTimerSheet.swift; sourceTree = "<group>"; };
 		177849236F57616A4ECD6DF5 /* TodosView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodosView.swift; sourceTree = "<group>"; };
+		1BF3BF066204995473E6252E /* DedupeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DedupeStore.swift; sourceTree = "<group>"; };
 		2AEB0B4CBF0A319E563F48CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2C5C8E7BAD894B3634CA2B3D /* SwipeToDelete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeToDelete.swift; sourceTree = "<group>"; };
 		309CB95445FD99DB72C0EE21 /* DeviceIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentity.swift; sourceTree = "<group>"; };
@@ -93,7 +95,7 @@
 		80373AAF38DD3054A0D75B8D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		8ACB58B4554499916581D31D /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		9531F45E07BFF30BC37C8F3C /* TimerLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerLiveActivity.swift; sourceTree = "<group>"; };
-		A05218D450E8FF1AE7D6A28A /* TimeLogger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimeLogger.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A05218D450E8FF1AE7D6A28A /* TimeLogger.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TimeLogger.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0229742E1BBF9420050D6C6 /* CalendarSuggestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarSuggestion.swift; sourceTree = "<group>"; };
 		B10355026926AF25127CB9E4 /* TimeLogger.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TimeLogger.entitlements; sourceTree = "<group>"; };
 		B435500DA141DB0EB9F2430D /* ServerSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerSelection.swift; sourceTree = "<group>"; };
@@ -104,7 +106,7 @@
 		D54D1B302853BE22A91C34DE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D6E39F0F39F85A343021B6DC /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsView.swift; sourceTree = "<group>"; };
 		E6045516D821BE747A0B9B8B /* EntriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntriesView.swift; sourceTree = "<group>"; };
-		EB454CBE394A6FA773AFFD24 /* TimeLoggerWidgetsiOS.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TimeLoggerWidgetsiOS.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB454CBE394A6FA773AFFD24 /* TimeLoggerWidgetsiOS.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = TimeLoggerWidgetsiOS.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5771F8EC5DF446BF0E43F27 /* SyncEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncEngine.swift; sourceTree = "<group>"; };
 		FA4D4FECF2462067BE900CF7 /* TimerAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerAppIntents.swift; sourceTree = "<group>"; };
 		FB88047DD2D8DAD3149C00EC /* Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared.swift; sourceTree = "<group>"; };
@@ -133,6 +135,7 @@
 			children = (
 				D4088DB1000D42C61E850DC4 /* BLEConstants.swift */,
 				B0229742E1BBF9420050D6C6 /* CalendarSuggestion.swift */,
+				1BF3BF066204995473E6252E /* DedupeStore.swift */,
 				4B7ADC85F34F87EBADD3C0B4 /* DesignSystem.swift */,
 				FC2255DC3E4FC7D357051785 /* Formatting.swift */,
 				494EB89E20D151382C8626FC /* GlassComponents.swift */,
@@ -266,9 +269,11 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					883EE8433B40772682F024AC = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					B6E8466EF3B4CCB4087B05B4 = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -329,6 +334,7 @@
 				8D6528B5AB92850B929FC912 /* CalendarSuggestion.swift in Sources */,
 				04D7763EE033E438F8D8842A /* CloudKitManager.swift in Sources */,
 				B5BB4F4A207F72AF703E7E3F /* ContentView.swift in Sources */,
+				EF0E7360E391187962F913F7 /* DedupeStore.swift in Sources */,
 				D1C6389137BDCC065E0C7480 /* DesignSystem.swift in Sources */,
 				49FE2E80B5A169F4089F7BD4 /* DeviceIdentity.swift in Sources */,
 				B4B50677BFA0513A1B587B31 /* EntriesView.swift in Sources */,
@@ -370,7 +376,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TimeLoggerWidgetsiOS/TimeLoggerWidgetsiOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5GG57Z8282;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = TimeLoggerWidgetsiOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -389,7 +395,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TimeLoggerWidgetsiOS/TimeLoggerWidgetsiOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5GG57Z8282;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = TimeLoggerWidgetsiOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -410,7 +416,7 @@
 				CODE_SIGN_ENTITLEMENTS = TimeLogger/TimeLogger.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5GG57Z8282;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = TimeLogger/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -433,7 +439,7 @@
 				CODE_SIGN_ENTITLEMENTS = TimeLogger/TimeLogger.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5GG57Z8282;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = TimeLogger/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
