@@ -17,6 +17,8 @@ struct EntriesView: View {
 
     @State private var filter: EntryFilter = .today
     @State private var selectedEntry: TimeEntryLocal?
+    @State private var isSelecting: Bool = false
+    @State private var selectedIds: Set<String> = []
 
     private var filteredEntries: [TimeEntryLocal] {
         let now = Int64(Date().timeIntervalSince1970)
@@ -53,13 +55,12 @@ struct EntriesView: View {
                 StatusStrip(
                     title: "Log",
                     caption: tlStatusCaption(),
-                    right: {
-                        MonoLabel("\(filteredEntries.count) entries", color: TL.Palette.ink)
-                    }
+                    right: { headerRight }
                 )
 
                 VStack(alignment: .leading, spacing: 20) {
                     filterRow.padding(.top, 16)
+                    if isSelecting { selectionBar }
                     kpiStrip
                     groupList
                 }
@@ -73,6 +74,80 @@ struct EntriesView: View {
             EntryDetailView(entry: e)
                 .presentationDetents([.medium, .large])
                 .presentationBackground(TL.Palette.bg)
+        }
+        .onChange(of: filter) { _, _ in selectedIds = [] }
+    }
+
+    // MARK: - Header + selection
+
+    @ViewBuilder
+    private var headerRight: some View {
+        if isSelecting {
+            Button {
+                isSelecting = false
+                selectedIds = []
+            } label: {
+                Text("CANCEL").tracking(1.2)
+                    .font(TL.TypeScale.label(10))
+                    .foregroundStyle(TL.Palette.ink)
+            }
+            .buttonStyle(.plain)
+        } else {
+            HStack(spacing: 10) {
+                MonoLabel("\(filteredEntries.count) entries", color: TL.Palette.ink)
+                Button {
+                    isSelecting = true
+                } label: {
+                    Text("SELECT").tracking(1.2)
+                        .font(TL.TypeScale.label(10))
+                        .foregroundStyle(TL.Palette.accent)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private var selectionBar: some View {
+        let visibleIds = Set(filteredEntries.map(\.localId))
+        let allSelected = !visibleIds.isEmpty && visibleIds.isSubset(of: selectedIds)
+        return HStack(spacing: 10) {
+            Button {
+                if allSelected {
+                    selectedIds.subtract(visibleIds)
+                } else {
+                    selectedIds.formUnion(visibleIds)
+                }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: allSelected ? "checkmark.circle.fill" : "circle")
+                        .font(.system(size: 15))
+                        .foregroundStyle(allSelected ? TL.Palette.accent : TL.Palette.mute)
+                    Text(allSelected ? "CLEAR" : "SELECT ALL").tracking(1.2)
+                        .font(TL.TypeScale.label(10))
+                        .foregroundStyle(TL.Palette.ink)
+                }
+            }
+            .buttonStyle(.plain)
+
+            Spacer()
+
+            MonoLabel("\(selectedIds.count) selected", color: TL.Palette.dim)
+
+            Button {
+                deleteSelected()
+            } label: {
+                Text("DELETE").tracking(1.2)
+                    .font(TL.TypeScale.label(10))
+                    .foregroundStyle(selectedIds.isEmpty ? TL.Palette.mute : .white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background {
+                        RoundedRectangle(cornerRadius: TL.Radius.s)
+                            .fill(selectedIds.isEmpty ? TL.Palette.raised : Color.red)
+                    }
+            }
+            .buttonStyle(.plain)
+            .disabled(selectedIds.isEmpty)
         }
     }
 
@@ -149,10 +224,16 @@ struct EntriesView: View {
 
             LazyVStack(spacing: 0) {
                 ForEach(g.items, id: \.localId) { e in
-                    SwipeToDelete(onDelete: { deleteEntry(e) }) {
+                    if isSelecting {
                         entryRow(e)
                             .contentShape(Rectangle())
-                            .onTapGesture { selectedEntry = e }
+                            .onTapGesture { toggleSelection(e) }
+                    } else {
+                        SwipeToDelete(onDelete: { deleteEntry(e) }) {
+                            entryRow(e)
+                                .contentShape(Rectangle())
+                                .onTapGesture { selectedEntry = e }
+                        }
                     }
                 }
             }
@@ -162,6 +243,13 @@ struct EntriesView: View {
     @ViewBuilder
     private func entryRow(_ e: TimeEntryLocal) -> some View {
         HStack(alignment: .center, spacing: 12) {
+            if isSelecting {
+                let selected = selectedIds.contains(e.localId)
+                Image(systemName: selected ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 18))
+                    .foregroundStyle(selected ? TL.Palette.accent : TL.Palette.mute)
+                    .frame(width: 22)
+            }
             MonoNum(timeOfDay(e.startedAt), size: 11, color: TL.Palette.dim)
                 .frame(width: 56, alignment: .leading)
             VStack(alignment: .leading, spacing: 3) {
@@ -224,6 +312,35 @@ struct EntriesView: View {
         }
         modelContext.delete(entry)
         try? modelContext.save()
+        syncEngine.scheduleSyncAfterMutation()
+    }
+
+    private func toggleSelection(_ entry: TimeEntryLocal) {
+        if selectedIds.contains(entry.localId) {
+            selectedIds.remove(entry.localId)
+        } else {
+            selectedIds.insert(entry.localId)
+        }
+    }
+
+    private func deleteSelected() {
+        guard !selectedIds.isEmpty else { return }
+        let now = Int64(Date().timeIntervalSince1970)
+        let targets = filteredEntries.filter { selectedIds.contains($0.localId) }
+        for entry in targets {
+            if let sid = entry.serverId {
+                let deletedAt = max(now, entry.lastModified + 1)
+                modelContext.insert(PendingDeletion(
+                    tableName: "time_entries",
+                    recordServerId: sid,
+                    deletedAt: deletedAt
+                ))
+            }
+            modelContext.delete(entry)
+        }
+        try? modelContext.save()
+        selectedIds = []
+        isSelecting = false
         syncEngine.scheduleSyncAfterMutation()
     }
 }
