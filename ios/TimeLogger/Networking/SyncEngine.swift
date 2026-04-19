@@ -108,7 +108,12 @@ final class SyncEngine: ObservableObject {
 
             clearSyncFlags(context)
             clearPendingDeletions(context)
-            meta.lastSyncTimestamp = response.new_sync_ts
+            // Back the watermark off by one second. The daemon stores
+            // last_modified at 1-second granularity and filters with strict `>`,
+            // so any timer inserted in the same whole second as this sync would
+            // otherwise be permanently invisible to future polls. Duplicates
+            // across the boundary are filtered by applyBLEServerTimers.
+            meta.lastSyncTimestamp = max(0, response.new_sync_ts - 1)
             try context.save()
             lastSyncDate = Date()
         } catch {
@@ -345,7 +350,7 @@ final class SyncEngine: ObservableObject {
             clearSyncFlags(context)
             clearPendingDeletions(context)
 
-            meta.lastSyncTimestamp = response.new_sync_ts
+            meta.lastSyncTimestamp = max(0, response.new_sync_ts - 1)
             try context.save()
             lastSyncDate = Date()
         } catch {

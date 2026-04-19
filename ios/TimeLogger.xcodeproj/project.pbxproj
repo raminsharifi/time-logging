@@ -21,6 +21,7 @@
 		56D95FC972B6E2DFFAF8F1C6 /* TimeEntryLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECC9C2D9935879FC9C191D9 /* TimeEntryLocal.swift */; };
 		60E5C692DAC829847AAFA04F /* WidgetBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659A2790306ECB811B20A0AB /* WidgetBridge.swift */; };
 		6534C1367727487AC6501857 /* PeerDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 695226352457745800C242F6 /* PeerDiscovery.swift */; };
+		6DDFA6FA9BB000D7511486E2 /* SwipeToDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5C8E7BAD894B3634CA2B3D /* SwipeToDelete.swift */; };
 		70F8191BCB2865952F8AE95B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80373AAF38DD3054A0D75B8D /* SettingsView.swift */; };
 		768B336E486EECC93D349BD3 /* PendingDeletion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7894F3F79F79BDE6E726B90B /* PendingDeletion.swift */; };
 		7B681F6E381CD939CC9D436D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D54D1B302853BE22A91C34DE /* Assets.xcassets */; };
@@ -74,6 +75,7 @@
 		1632127582D56A8980F82039 /* NewTimerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTimerSheet.swift; sourceTree = "<group>"; };
 		177849236F57616A4ECD6DF5 /* TodosView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodosView.swift; sourceTree = "<group>"; };
 		2AEB0B4CBF0A319E563F48CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		2C5C8E7BAD894B3634CA2B3D /* SwipeToDelete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeToDelete.swift; sourceTree = "<group>"; };
 		309CB95445FD99DB72C0EE21 /* DeviceIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentity.swift; sourceTree = "<group>"; };
 		3ECC9C2D9935879FC9C191D9 /* TimeEntryLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeEntryLocal.swift; sourceTree = "<group>"; };
 		45F5B74266C21AE4A3F8F786 /* TodoItemLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoItemLocal.swift; sourceTree = "<group>"; };
@@ -91,7 +93,7 @@
 		80373AAF38DD3054A0D75B8D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		8ACB58B4554499916581D31D /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		9531F45E07BFF30BC37C8F3C /* TimerLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerLiveActivity.swift; sourceTree = "<group>"; };
-		A05218D450E8FF1AE7D6A28A /* TimeLogger.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TimeLogger.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A05218D450E8FF1AE7D6A28A /* TimeLogger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimeLogger.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0229742E1BBF9420050D6C6 /* CalendarSuggestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarSuggestion.swift; sourceTree = "<group>"; };
 		B10355026926AF25127CB9E4 /* TimeLogger.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TimeLogger.entitlements; sourceTree = "<group>"; };
 		B435500DA141DB0EB9F2430D /* ServerSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerSelection.swift; sourceTree = "<group>"; };
@@ -102,7 +104,7 @@
 		D54D1B302853BE22A91C34DE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D6E39F0F39F85A343021B6DC /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsView.swift; sourceTree = "<group>"; };
 		E6045516D821BE747A0B9B8B /* EntriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntriesView.swift; sourceTree = "<group>"; };
-		EB454CBE394A6FA773AFFD24 /* TimeLoggerWidgetsiOS.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = TimeLoggerWidgetsiOS.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB454CBE394A6FA773AFFD24 /* TimeLoggerWidgetsiOS.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TimeLoggerWidgetsiOS.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5771F8EC5DF446BF0E43F27 /* SyncEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncEngine.swift; sourceTree = "<group>"; };
 		FA4D4FECF2462067BE900CF7 /* TimerAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerAppIntents.swift; sourceTree = "<group>"; };
 		FB88047DD2D8DAD3149C00EC /* Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared.swift; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 				4B7ADC85F34F87EBADD3C0B4 /* DesignSystem.swift */,
 				FC2255DC3E4FC7D357051785 /* Formatting.swift */,
 				494EB89E20D151382C8626FC /* GlassComponents.swift */,
+				2C5C8E7BAD894B3634CA2B3D /* SwipeToDelete.swift */,
 				659A2790306ECB811B20A0AB /* WidgetBridge.swift */,
 			);
 			path = Utilities;
@@ -263,11 +266,9 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					883EE8433B40772682F024AC = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					B6E8466EF3B4CCB4087B05B4 = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -341,6 +342,7 @@
 				D8CBA1AB3C0DEB2561CAF14B /* ServerSelection.swift in Sources */,
 				70F8191BCB2865952F8AE95B /* SettingsView.swift in Sources */,
 				AFA33B62FC751974515C417E /* Shared.swift in Sources */,
+				6DDFA6FA9BB000D7511486E2 /* SwipeToDelete.swift in Sources */,
 				CBA9FB795C6D2106DFC1AD9E /* SyncEngine.swift in Sources */,
 				B00D9C656A4E568B91CA5D5F /* SyncMetadata.swift in Sources */,
 				56D95FC972B6E2DFFAF8F1C6 /* TimeEntryLocal.swift in Sources */,
@@ -368,7 +370,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TimeLoggerWidgetsiOS/TimeLoggerWidgetsiOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 5GG57Z8282;
 				INFOPLIST_FILE = TimeLoggerWidgetsiOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -387,7 +389,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TimeLoggerWidgetsiOS/TimeLoggerWidgetsiOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 5GG57Z8282;
 				INFOPLIST_FILE = TimeLoggerWidgetsiOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -408,7 +410,7 @@
 				CODE_SIGN_ENTITLEMENTS = TimeLogger/TimeLogger.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 5GG57Z8282;
 				INFOPLIST_FILE = TimeLogger/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -431,7 +433,7 @@
 				CODE_SIGN_ENTITLEMENTS = TimeLogger/TimeLogger.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 5GG57Z8282;
 				INFOPLIST_FILE = TimeLogger/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

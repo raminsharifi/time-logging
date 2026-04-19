@@ -149,14 +149,11 @@ struct EntriesView: View {
 
             LazyVStack(spacing: 0) {
                 ForEach(g.items, id: \.localId) { e in
-                    entryRow(e)
-                        .contentShape(Rectangle())
-                        .onTapGesture { selectedEntry = e }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                            Button(role: .destructive) {
-                                deleteEntry(e)
-                            } label: { Label("Delete", systemImage: "trash") }
-                        }
+                    SwipeToDelete(onDelete: { deleteEntry(e) }) {
+                        entryRow(e)
+                            .contentShape(Rectangle())
+                            .onTapGesture { selectedEntry = e }
+                    }
                 }
             }
         }

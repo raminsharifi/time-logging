@@ -324,6 +324,7 @@ struct TimersView: View {
         }
         modelContext.delete(t)
         try? modelContext.save()
+        WidgetBridge.publish(runningTimer: nil, modelContext: modelContext)
         syncEngine.scheduleSyncAfterMutation()
     }
 
