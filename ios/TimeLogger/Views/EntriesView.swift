@@ -214,7 +214,13 @@ struct EntriesView: View {
 
     private func deleteEntry(_ entry: TimeEntryLocal) {
         if let sid = entry.serverId {
-            modelContext.insert(PendingDeletion(tableName: "time_entries", recordServerId: sid))
+            let now = Int64(Date().timeIntervalSince1970)
+            let deletedAt = max(now, entry.lastModified + 1)
+            modelContext.insert(PendingDeletion(
+                tableName: "time_entries",
+                recordServerId: sid,
+                deletedAt: deletedAt
+            ))
         }
         modelContext.delete(entry)
         try? modelContext.save()

@@ -41,7 +41,6 @@ private struct TLSidebar: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            titleBar
             brandBlock
 
             VStack(spacing: 0) {
@@ -87,20 +86,6 @@ private struct TLSidebar: View {
             Spacer(minLength: 0)
 
             todayFooter
-        }
-    }
-
-    private var titleBar: some View {
-        HStack(spacing: 8) {
-            Circle().fill(Color(red: 1.0, green: 0.37, blue: 0.34)).frame(width: 12, height: 12)
-            Circle().fill(Color(red: 1.0, green: 0.74, blue: 0.18)).frame(width: 12, height: 12)
-            Circle().fill(Color(red: 0.16, green: 0.78, blue: 0.25)).frame(width: 12, height: 12)
-            Spacer()
-        }
-        .padding(.horizontal, 14)
-        .frame(height: 38)
-        .overlay(alignment: .bottom) {
-            Rectangle().fill(TL.Palette.line).frame(height: 1)
         }
     }
 

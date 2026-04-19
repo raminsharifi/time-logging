@@ -320,7 +320,17 @@ struct TimersView: View {
         )
         modelContext.insert(entry)
         if let sid = t.serverId {
-            modelContext.insert(PendingDeletion(tableName: "active_timers", recordServerId: sid))
+            // Daemon filters deletions with strict `>` against last_modified
+            // (sync.rs:181) and stores seconds, so a same-second or slightly-
+            // skewed deletedAt gets silently dropped — leaves the active timer
+            // alive on the daemon, Mac keeps ticking. Force deletedAt past the
+            // timer's last_modified.
+            let deletedAt = max(now, t.lastModified + 1)
+            modelContext.insert(PendingDeletion(
+                tableName: "active_timers",
+                recordServerId: sid,
+                deletedAt: deletedAt
+            ))
         }
         modelContext.delete(t)
         try? modelContext.save()
